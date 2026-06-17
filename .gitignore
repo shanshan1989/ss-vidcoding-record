@@ -17,3 +17,6 @@
 # Environment
 .env
 .env.local
+
+# MCP config (contains sensitive tokens)
+.mcp.json
