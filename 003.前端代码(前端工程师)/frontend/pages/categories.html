@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>分类管理 - 随手记账</title>
+  <script src="../assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <style>
+    .icon-btn:hover { transform: scale(1.15); }
+    .icon-btn.selected { background-color: #006c49; color: #ffffff; }
+    .category-item { transition: all 0.2s ease; }
+    .category-item.editing { ring: 2px; ring-color: #006c49; background-color: #eef6ee; }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+  <!-- Desktop Side Navigation -->
+  <aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container p-md gap-sm border-r border-border-light z-50">
+    <div class="flex items-center gap-sm px-xs mb-lg">
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-primary">account_balance_wallet</span>
+      </div>
+      <div>
+        <h1 class="font-headline-lg text-headline-lg font-black text-primary">随手记账</h1>
+        <p class="font-label-sm text-label-sm text-secondary">个人财务管理</p>
+      </div>
+    </div>
+    <nav class="flex flex-col gap-xs flex-grow">
+      <a href="./home.html" class="nav-item flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors active:translate-x-1 duration-200">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="font-label-md text-label-md">首页</span>
+      </a>
+      <a href="./transactions.html" class="nav-item flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors active:translate-x-1 duration-200">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="font-label-md text-label-md">账单</span>
+      </a>
+      <a href="./statistics.html" class="nav-item flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors active:translate-x-1 duration-200">
+        <span class="material-symbols-outlined">analytics</span>
+        <span class="font-label-md text-label-md">统计</span>
+      </a>
+      <a href="./settings.html" class="nav-item flex items-center gap-md px-md py-sm rounded-lg font-bold transition-colors active:translate-x-1 duration-200">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="font-label-md text-label-md">设置</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-grow md:ml-64 px-margin-mobile md:px-margin-desktop py-lg max-w-3xl mx-auto w-full pb-24 md:pb-0">
+    <!-- Header -->
+    <header class="flex items-center gap-md mb-xl">
+      <a href="./settings.html" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <div>
+        <h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">分类管理</h2>
+        <p class="font-body-sm text-body-sm text-text-muted">管理您的收入与支出类别</p>
+      </div>
+    </header>
+
+    <!-- Type Toggle -->
+    <div class="bg-surface-container-low p-xs rounded-xl mb-lg flex">
+      <button type="button" id="tab-expense" data-type="expense" class="flex-1 py-sm rounded-lg font-label-md text-label-md font-bold transition-all bg-primary-container text-on-primary-container">
+        支出
+      </button>
+      <button type="button" id="tab-income" data-type="income" class="flex-1 py-sm rounded-lg font-label-md text-label-md font-medium text-secondary hover:bg-surface-variant transition-all">
+        收入
+      </button>
+    </div>
+
+    <!-- Add/Edit Form -->
+    <section class="bg-surface-container-lowest card-shadow rounded-xl p-lg border border-border-light mb-lg">
+      <h3 id="formTitle" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold mb-md">添加支出分类</h3>
+      <input type="hidden" id="editingId" value="">
+
+      <div class="space-y-md">
+        <!-- Icon Selector -->
+        <div class="space-y-xs">
+          <label class="font-label-md text-label-md text-on-surface-variant">选择图标</label>
+          <div class="flex items-center gap-md">
+            <button type="button" id="selectedIconBtn" class="w-14 h-14 rounded-2xl bg-surface-container-low border border-border-light flex items-center justify-center text-primary hover:bg-surface-container-high transition-colors">
+              <span id="selectedIconSymbol" class="material-symbols-outlined text-[28px]">restaurant</span>
+            </button>
+            <span class="font-body-sm text-body-sm text-text-muted">点击选择图标</span>
+          </div>
+        </div>
+
+        <!-- Icon Picker Panel -->
+        <div id="iconPanel" class="hidden bg-surface-container-low rounded-xl p-md border border-border-light">
+          <div id="iconGrid" class="grid grid-cols-6 sm:grid-cols-8 gap-sm">
+            <!-- Icons rendered dynamically based on current type -->
+          </div>
+        </div>
+
+        <!-- Category Name -->
+        <div class="space-y-xs">
+          <label for="categoryName" class="font-label-md text-label-md text-on-surface-variant">分类名称</label>
+          <input type="text" id="categoryName" placeholder="请输入分类名称" class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md">
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-md pt-sm">
+          <button type="button" id="saveCategoryBtn" class="flex-1 bg-primary text-on-primary py-sm rounded-xl font-label-md text-label-md font-bold hover:opacity-90 active:scale-95 transition-all">
+            添加
+          </button>
+          <button type="button" id="cancelEditBtn" class="hidden flex-1 bg-surface-container-high text-on-surface py-sm rounded-xl font-label-md text-label-md font-medium hover:bg-surface-container transition-all">
+            取消
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category List -->
+    <section class="bg-surface-container-lowest card-shadow rounded-xl p-lg border border-border-light">
+      <div class="flex justify-between items-center mb-lg">
+        <h3 id="listTitle" class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">支出分类</h3>
+        <span id="categoryCount" class="font-body-sm text-body-sm text-text-muted">0 个</span>
+      </div>
+
+      <div id="categoryList" class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+        <!-- Items will be rendered here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-container-lowest border-t border-border-light flex items-center justify-around z-50">
+    <a href="./home.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="text-[10px] font-medium">首页</span>
+    </a>
+    <a href="./transactions.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span class="text-[10px] font-medium">账单</span>
+    </a>
+    <a href="./statistics.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+      <span class="material-symbols-outlined">analytics</span>
+      <span class="text-[10px] font-medium">统计</span>
+    </a>
+    <a href="./settings.html" class="flex flex-col items-center gap-xs text-primary font-bold">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="text-[10px] font-medium">设置</span>
+    </a>
+  </nav>
+
+  <script src="../assets/js/shared.js"></script>
+  <script src="../assets/js/categories-data.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      let currentType = 'expense';
+      let selectedIcon = window.SSJCategories.TYPE_CONFIG.expense.defaultIcon;
+
+      function setSelectedIcon(iconName) {
+        selectedIcon = iconName;
+        document.getElementById('selectedIconSymbol').textContent = iconName;
+        document.querySelectorAll('#iconGrid .icon-btn').forEach((btn) => {
+          btn.classList.toggle('selected', btn.dataset.icon === iconName);
+        });
+      }
+
+      function renderIconPicker() {
+        const grid = document.getElementById('iconGrid');
+        if (!grid) return;
+
+        const icons = window.SSJCategories.TYPE_CONFIG[currentType].icons;
+        grid.innerHTML = '';
+
+        icons.forEach((iconName) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.dataset.icon = iconName;
+          btn.className = 'icon-btn w-10 h-10 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high flex items-center justify-center text-on-surface transition-transform';
+          btn.innerHTML = `<span class="material-symbols-outlined">${iconName}</span>`;
+          btn.addEventListener('click', () => {
+            setSelectedIcon(iconName);
+            document.getElementById('iconPanel').classList.add('hidden');
+          });
+          grid.appendChild(btn);
+        });
+
+        setSelectedIcon(selectedIcon);
+      }
+
+      function setCurrentType(type) {
+        currentType = type;
+        selectedIcon = window.SSJCategories.TYPE_CONFIG[type].defaultIcon;
+
+        // Update tabs
+        const expenseTab = document.getElementById('tab-expense');
+        const incomeTab = document.getElementById('tab-income');
+        const activeClasses = ['bg-primary-container', 'text-on-primary-container', 'font-bold'];
+        const inactiveClasses = ['text-secondary', 'font-medium', 'hover:bg-surface-variant'];
+
+        if (type === 'expense') {
+          expenseTab.classList.add(...activeClasses);
+          expenseTab.classList.remove(...inactiveClasses);
+          incomeTab.classList.remove(...activeClasses);
+          incomeTab.classList.add(...inactiveClasses);
+        } else {
+          incomeTab.classList.add(...activeClasses);
+          incomeTab.classList.remove(...inactiveClasses);
+          expenseTab.classList.remove(...activeClasses);
+          expenseTab.classList.add(...inactiveClasses);
+        }
+
+        // Update titles
+        document.getElementById('formTitle').textContent = '添加' + window.SSJCategories.TYPE_CONFIG[type].label + '分类';
+        document.getElementById('listTitle').textContent = window.SSJCategories.TYPE_CONFIG[type].label + '分类';
+
+        // Reset form
+        resetForm();
+        renderIconPicker();
+        renderList();
+      }
+
+      function resetForm() {
+        document.getElementById('categoryName').value = '';
+        document.getElementById('editingId').value = '';
+        document.getElementById('saveCategoryBtn').textContent = '添加';
+        document.getElementById('cancelEditBtn').classList.add('hidden');
+        selectedIcon = window.SSJCategories.TYPE_CONFIG[currentType].defaultIcon;
+        setSelectedIcon(selectedIcon);
+        document.getElementById('iconPanel').classList.add('hidden');
+        document.querySelectorAll('.category-item').forEach((el) => el.classList.remove('editing'));
+      }
+
+      function renderList() {
+        const data = window.SSJCategories.loadCategories();
+        const list = data[currentType] || [];
+        const container = document.getElementById('categoryList');
+        const countEl = document.getElementById('categoryCount');
+
+        countEl.textContent = list.length + ' 个';
+        container.innerHTML = '';
+
+        if (list.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-full text-center py-xl text-text-muted font-body-sm">
+              暂无分类，请添加
+            </div>
+          `;
+          return;
+        }
+
+        list.forEach((item) => {
+          const el = document.createElement('div');
+          el.className = 'category-item flex items-center justify-between p-md bg-surface-container-low rounded-xl border border-border-light hover:shadow-sm cursor-pointer';
+          el.dataset.id = item.id;
+          el.innerHTML = `
+            <div class="flex items-center gap-md">
+              <span class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-lowest text-primary">
+                <span class="material-symbols-outlined text-[24px]">${item.icon}</span>
+              </span>
+              <span class="font-body-md text-body-md text-on-surface font-medium">${escapeHtml(item.name)}</span>
+            </div>
+            <button type="button" class="delete-btn w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors" data-id="${item.id}" title="删除">
+              <span class="material-symbols-outlined text-[20px]">delete</span>
+            </button>
+          `;
+
+          // Click on card to edit
+          el.addEventListener('click', (e) => {
+            if (e.target.closest('.delete-btn')) return;
+            startEdit(item);
+          });
+
+          // Delete button
+          const deleteBtn = el.querySelector('.delete-btn');
+          deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('确定要删除分类「' + item.name + '」吗？')) {
+              deleteCategory(item.id);
+            }
+          });
+
+          container.appendChild(el);
+        });
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function startEdit(item) {
+        document.getElementById('categoryName').value = item.name;
+        document.getElementById('editingId').value = item.id;
+        setSelectedIcon(item.icon);
+        document.getElementById('saveCategoryBtn').textContent = '保存';
+        document.getElementById('cancelEditBtn').classList.remove('hidden');
+        document.getElementById('formTitle').textContent = '编辑' + window.SSJCategories.TYPE_CONFIG[currentType].label + '分类';
+
+        // Highlight editing item
+        document.querySelectorAll('.category-item').forEach((el) => {
+          el.classList.toggle('editing', el.dataset.id === item.id);
+        });
+      }
+
+      function saveCategory() {
+        const nameInput = document.getElementById('categoryName');
+        const name = nameInput.value.trim();
+        const editingId = document.getElementById('editingId').value;
+
+        if (!name) {
+          alert('请输入分类名称');
+          return;
+        }
+
+        const data = window.SSJCategories.loadCategories();
+        const list = data[currentType];
+
+        if (editingId) {
+          // Update existing
+          const index = list.findIndex((item) => item.id === editingId);
+          if (index >= 0) {
+            list[index] = { ...list[index], name, icon: selectedIcon };
+          }
+        } else {
+          // Add new
+          // Check duplicate name
+          if (list.some((item) => item.name === name)) {
+            alert('该分类已存在');
+            return;
+          }
+          list.push({ id: window.SSJCategories.generateId(currentType), name, icon: selectedIcon });
+        }
+
+        window.SSJCategories.saveCategories(data);
+        resetForm();
+        renderList();
+      }
+
+      function deleteCategory(id) {
+        const data = window.SSJCategories.loadCategories();
+        data[currentType] = data[currentType].filter((item) => item.id !== id);
+        window.SSJCategories.saveCategories(data);
+        resetForm();
+        renderList();
+      }
+
+      function init() {
+        // Tab switching
+        document.getElementById('tab-expense').addEventListener('click', () => setCurrentType('expense'));
+        document.getElementById('tab-income').addEventListener('click', () => setCurrentType('income'));
+
+        // Icon picker toggle
+        const iconBtn = document.getElementById('selectedIconBtn');
+        const iconPanel = document.getElementById('iconPanel');
+        iconBtn.addEventListener('click', () => {
+          iconPanel.classList.toggle('hidden');
+        });
+
+        // Save / Add
+        document.getElementById('saveCategoryBtn').addEventListener('click', saveCategory);
+
+        // Cancel edit
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+          resetForm();
+        });
+
+        // Enter key to save
+        document.getElementById('categoryName').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') saveCategory();
+        });
+
+        setCurrentType('expense');
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
+</body>
+</html>

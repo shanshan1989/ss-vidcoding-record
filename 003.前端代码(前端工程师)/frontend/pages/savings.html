@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>储蓄详情 - 随手记账</title>
+  <script src="../assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="bg-surface text-on-background min-h-screen flex">
+  <!-- Desktop Side Navigation -->
+  <aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-border-light flex flex-col p-lg z-50">
+    <div class="mb-xl">
+      <h1 class="font-headline-lg text-headline-lg font-bold text-primary">随手记账</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant opacity-70">专注你的财务健康</p>
+    </div>
+    <nav class="flex-grow space-y-sm">
+      <a href="./home.html" class="nav-item flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-md py-sm rounded-lg transition-all active:opacity-80">
+        <span class="material-symbols-outlined">home</span>
+        <span class="font-body-md text-body-md">首页</span>
+      </a>
+      <a href="./transactions.html" class="nav-item flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-md py-sm rounded-lg transition-all active:opacity-80">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="font-body-md text-body-md">账单</span>
+      </a>
+      <a href="./statistics.html" class="nav-item flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg px-md py-sm shadow-sm">
+        <span class="material-symbols-outlined">bar_chart</span>
+        <span class="font-body-md text-body-md">统计</span>
+      </a>
+      <a href="./settings.html" class="nav-item flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-md py-sm rounded-lg transition-all active:opacity-80">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="font-body-md text-body-md">设置</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Canvas -->
+  <main class="ml-0 md:ml-64 flex-1 p-margin-desktop overflow-y-auto bg-background pb-24 md:pb-0">
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-xl">
+      <div class="flex items-center gap-md">
+        <a href="./statistics.html" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <h2 class="font-headline-lg text-headline-lg text-on-surface">储蓄详情</h2>
+      </div>
+      <div class="flex items-center gap-md">
+        <span class="font-label-md text-label-md text-on-surface-variant">2026年年度报告</span>
+        <button type="button" class="p-sm rounded-lg border border-border-light text-primary hover:bg-primary-container/10 transition-colors">
+          <span class="material-symbols-outlined">share</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Summary Grid (Bento Style) -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-lg mb-xl">
+      <!-- Total Savings -->
+      <div class="bg-surface-container-lowest rounded-xl p-lg card-shadow border border-border-light flex flex-col justify-between h-40">
+        <div class="flex justify-between items-start">
+          <span class="font-label-md text-label-md text-on-surface-variant">储蓄总额</span>
+          <span class="material-symbols-outlined text-primary">account_balance_wallet</span>
+        </div>
+        <div>
+          <h3 class="font-number-xl text-number-xl text-on-surface">¥ 128,450.00</h3>
+          <p class="font-label-sm text-label-sm text-primary flex items-center gap-xs">
+            <span class="material-symbols-outlined text-[14px]">trending_up</span>
+            较上月增长 12.5%
+          </p>
+        </div>
+      </div>
+
+      <!-- Monthly Growth -->
+      <div class="bg-surface-container-lowest rounded-xl p-lg card-shadow border border-border-light flex flex-col justify-between h-40">
+        <div class="flex justify-between items-start">
+          <span class="font-label-md text-label-md text-on-surface-variant">本月平均增长</span>
+          <span class="material-symbols-outlined text-secondary">show_chart</span>
+        </div>
+        <div>
+          <h3 class="font-number-xl text-number-xl text-on-surface">¥ 8,300.00</h3>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">稳定增长趋势</p>
+        </div>
+      </div>
+
+      <!-- Savings Goal Progress -->
+      <div class="bg-surface-container-lowest rounded-xl p-lg card-shadow border border-border-light flex flex-col justify-between h-40">
+        <div class="flex justify-between items-start">
+          <span class="font-label-md text-label-md text-on-surface-variant">储蓄目标进度</span>
+          <span class="material-symbols-outlined text-warning-yellow">flag</span>
+        </div>
+        <div class="space-y-sm">
+          <div class="flex justify-between font-label-sm text-label-sm">
+            <span class="text-on-surface-variant">¥ 200,000.00 目标</span>
+            <span class="text-primary font-bold">64.2%</span>
+          </div>
+          <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+            <div class="h-full bg-primary-container w-[64.2%] transition-all duration-1000 ease-out"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trend Chart Area -->
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-lg mb-xl">
+      <div class="xl:col-span-2 bg-surface-container-lowest rounded-xl p-lg card-shadow border border-border-light">
+        <div class="flex justify-between items-center mb-xl">
+          <h4 class="font-headline-lg text-headline-lg text-on-surface">2026年储蓄趋势</h4>
+          <div class="flex gap-xs">
+            <button type="button" class="px-md py-xs bg-surface-container text-on-surface-variant rounded-full text-label-sm font-label-sm">月度</button>
+            <button type="button" class="px-md py-xs text-on-surface-variant hover:bg-surface-container rounded-full text-label-sm font-label-sm">季度</button>
+          </div>
+        </div>
+
+        <div class="h-64 flex items-end justify-between gap-sm px-md pb-sm relative">
+          <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+            <div class="border-b border-outline"></div>
+            <div class="border-b border-outline"></div>
+            <div class="border-b border-outline"></div>
+            <div class="border-b border-outline"></div>
+          </div>
+
+          <div class="group flex flex-col items-center flex-1">
+            <div class="w-full bg-primary/20 hover:bg-primary-container rounded-t-lg transition-all duration-500 h-[40%] group-hover:h-[45%]"></div>
+            <span class="text-[10px] text-on-surface-variant mt-sm">1月</span>
+          </div>
+          <div class="group flex flex-col items-center flex-1">
+            <div class="w-full bg-primary/20 hover:bg-primary-container rounded-t-lg transition-all duration-500 h-[55%] group-hover:h-[60%]"></div>
+            <span class="text-[10px] text-on-surface-variant mt-sm">2月</span>
+          </div>
+          <div class="group flex flex-col items-center flex-1">
+            <div class="w-full bg-primary/20 hover:bg-primary-container rounded-t-lg transition-all duration-500 h-[48%] group-hover:h-[53%]"></div>
+            <span class="text-[10px] text-on-surface-variant mt-sm">3月</span>
+          </div>
+          <div class="group flex flex-col items-center flex-1">
+            <div class="w-full bg-primary/20 hover:bg-primary-container rounded-t-lg transition-all duration-500 h-[65%] group-hover:h-[70%]"></div>
+            <span class="text-[10px] text-on-surface-variant mt-sm">4月</span>
+          </div>
+          <div class="group flex flex-col items-center flex-1">
+            <div class="w-full bg-primary/20 hover:bg-primary-container rounded-t-lg transition-all duration-500 h-[75%] group-hover:h-[80%]"></div>
+            <span class="text-[10px] text-on-surface-variant mt-sm">5月</span>
+          </div>
+          <div class="group flex flex-col items-center flex-1">
+            <div class="w-full bg-primary rounded-t-lg transition-all duration-500 h-[85%]"></div>
+            <span class="text-[10px] text-primary font-bold mt-sm">6月</span>
+          </div>
+          <div class="group flex flex-col items-center flex-1">
+            <div class="w-full bg-primary/20 hover:bg-primary-container rounded-t-lg transition-all duration-500 h-[40%]"></div>
+            <span class="text-[10px] text-on-surface-variant mt-sm">7月</span>
+          </div>
+          <div class="group flex flex-col items-center flex-1 opacity-40">
+            <div class="w-full bg-surface-variant rounded-t-lg h-[30%]"></div>
+            <span class="text-[10px] text-on-surface-variant mt-sm">8月</span>
+          </div>
+          <div class="group flex flex-col items-center flex-1 opacity-40">
+            <div class="w-full bg-surface-variant rounded-t-lg h-[30%]"></div>
+            <span class="text-[10px] text-on-surface-variant mt-sm">9月</span>
+          </div>
+          <div class="group flex flex-col items-center flex-1 opacity-40">
+            <div class="w-full bg-surface-variant rounded-t-lg h-[30%]"></div>
+            <span class="text-[10px] text-on-surface-variant mt-sm">10月</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Asset Distribution Side List -->
+      <div class="bg-surface-container-lowest rounded-xl p-lg card-shadow border border-border-light">
+        <h4 class="font-headline-lg text-headline-lg text-on-surface mb-xl">资产分布</h4>
+        <div class="space-y-lg">
+          <!-- Cash -->
+          <div class="space-y-sm">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-md">
+                <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary">
+                  <span class="material-symbols-outlined text-[18px]">payments</span>
+                </div>
+                <span class="font-body-md text-body-md text-on-surface">现金</span>
+              </div>
+              <span class="font-number-md text-number-md text-on-surface">¥ 4,500</span>
+            </div>
+            <div class="h-1.5 w-full bg-surface-container rounded-full">
+              <div class="h-full bg-primary" style="width: 4%;"></div>
+            </div>
+          </div>
+
+          <!-- WeChat Pay -->
+          <div class="space-y-sm">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-md">
+                <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-[#07C160]">
+                  <span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+                </div>
+                <span class="font-body-md text-body-md text-on-surface">微信支付</span>
+              </div>
+              <span class="font-number-md text-number-md text-on-surface">¥ 32,800</span>
+            </div>
+            <div class="h-1.5 w-full bg-surface-container rounded-full">
+              <div class="h-full bg-primary" style="width: 25%;"></div>
+            </div>
+          </div>
+
+          <!-- Alipay -->
+          <div class="space-y-sm">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-md">
+                <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-[#1677FF]">
+                  <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                </div>
+                <span class="font-body-md text-body-md text-on-surface">支付宝</span>
+              </div>
+              <span class="font-number-md text-number-md text-on-surface">¥ 28,150</span>
+            </div>
+            <div class="h-1.5 w-full bg-surface-container rounded-full">
+              <div class="h-full bg-primary" style="width: 22%;"></div>
+            </div>
+          </div>
+
+          <!-- Bank Cards -->
+          <div class="space-y-sm">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-md">
+                <div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-secondary">
+                  <span class="material-symbols-outlined text-[18px]">credit_card</span>
+                </div>
+                <span class="font-body-md text-body-md text-on-surface">银行卡</span>
+              </div>
+              <span class="font-number-md text-number-md text-on-surface">¥ 63,000</span>
+            </div>
+            <div class="h-1.5 w-full bg-surface-container rounded-full">
+              <div class="h-full bg-primary" style="width: 49%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dynamic Insights Section -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-lg mb-2xl">
+      <div class="bg-primary/5 rounded-xl p-lg border border-primary/10 flex gap-lg">
+        <div class="w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined">lightbulb</span>
+        </div>
+        <div>
+          <h5 class="font-label-md text-label-md text-primary font-bold mb-xs">财务洞察</h5>
+          <p class="font-body-sm text-body-sm text-on-surface-variant">您的储蓄率目前保持在35%，高于上季度28%的平均水平。如果保持这个节奏，您将提前2个月完成年度储蓄目标。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-2xl pt-xl border-t border-border-light flex flex-col md:flex-row justify-between items-center text-on-surface-variant opacity-60">
+      <p class="font-label-sm text-label-sm">© 2026 随手记账</p>
+    </footer>
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-container-lowest border-t border-border-light flex items-center justify-around z-50">
+    <a href="./home.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+      <span class="material-symbols-outlined">home</span>
+      <span class="text-[10px] font-medium">首页</span>
+    </a>
+    <a href="./transactions.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span class="text-[10px] font-medium">账单</span>
+    </a>
+    <a href="./statistics.html" class="flex flex-col items-center gap-xs text-primary font-bold">
+      <span class="material-symbols-outlined">bar_chart</span>
+      <span class="text-[10px] font-medium">统计</span>
+    </a>
+    <a href="./settings.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="text-[10px] font-medium">设置</span>
+    </a>
+  </nav>
+
+  <script src="../assets/js/shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const progressBars = document.querySelectorAll('.bg-primary-container, .bg-primary');
+      progressBars.forEach((bar) => {
+        const width = bar.style.width;
+        if (width) {
+          bar.style.width = '0';
+          setTimeout(() => {
+            bar.style.width = width;
+          }, 200);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

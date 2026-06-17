@@ -1,0 +1,375 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#fc7c78",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#6ffbbe",
+                    "outline-variant": "#bbcabf",
+                    "inverse-primary": "#4edea3",
+                    "surface-variant": "#dde4dd",
+                    "secondary-fixed": "#e1e3e4",
+                    "surface-dim": "#d4dcd5",
+                    "on-secondary-fixed-variant": "#454748",
+                    "surface-container": "#e8f0e9",
+                    "on-primary-fixed-variant": "#005236",
+                    "alert-red": "#EF4444",
+                    "on-tertiary-fixed-variant": "#842225",
+                    "primary-fixed-dim": "#4edea3",
+                    "on-surface-variant": "#3c4a42",
+                    "on-primary-container": "#00422b",
+                    "secondary-container": "#e1e3e4",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#191c1d",
+                    "text-muted": "#6B7280",
+                    "surface-container-low": "#eef6ee",
+                    "on-primary-fixed": "#002113",
+                    "surface-container-high": "#e3eae3",
+                    "primary": "#006c49",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#410005",
+                    "on-secondary-container": "#626566",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#161d19",
+                    "border-light": "#E5E7EB",
+                    "outline": "#6c7a71",
+                    "background": "#f4fbf4",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#161d19",
+                    "secondary": "#5c5f60",
+                    "secondary-fixed-dim": "#c5c7c8",
+                    "on-tertiary-container": "#711419",
+                    "inverse-surface": "#2b322d",
+                    "warning-yellow": "#F59E0B",
+                    "tertiary-fixed-dim": "#ffb3af",
+                    "surface-bright": "#f4fbf4",
+                    "inverse-on-surface": "#ebf3eb",
+                    "surface-container-highest": "#dde4dd",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-tint": "#006c49",
+                    "tertiary-fixed": "#ffdad7",
+                    "tertiary": "#a43a3a",
+                    "on-error": "#ffffff",
+                    "primary-container": "#10b981",
+                    "on-primary": "#ffffff",
+                    "surface": "#f4fbf4",
+                    "text-main": "#1F2937"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "margin-desktop": "32px",
+                    "lg": "24px",
+                    "margin-mobile": "16px",
+                    "gutter": "16px",
+                    "2xl": "48px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "base": "4px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "number-xl": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "display-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "number-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "number-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-md": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "number-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .transaction-card:hover .action-buttons {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-16 sticky top-0 z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-sm transition-all duration-150">
+<div class="flex items-center gap-md">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">随手记账</h1>
+<nav class="hidden md:flex gap-lg ml-xl">
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">首页</a>
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary dark:border-primary-fixed pb-1 font-body-md text-body-md" href="#">账单</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">统计</a>
+<a class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md" href="#">设置</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full focus:ring-2 focus:ring-primary/20 w-64 text-body-sm font-body-sm" placeholder="搜索交易流水..." type="text">
+</div>
+
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="用户头像" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpcDMRwvUB1a8c8hBOXifDj1JDWoZ0hOcO6iQfJaPoND2CgMNvOIiUyQKDJpgvAhJnpTd8qAAToVo3rOmtTpflDgWk9HLT-tK6f1v3PZpU8rDJ1wILJa0MvAHa5cQTtc5fTl2yQgteFJScjOHQIB1y4FbfOZd5r49yO3REp3ndefD4FrqkNemUvzzZYRegRxNlh-7PiL_lFcXTjZ_uC_eJn44Opd231xY96F55mhR0wseiuUVXXeSAi8L1-8Wxq2bIJwHQ5NlJzGOQ">
+</div>
+</div>
+</header>
+<main class="flex-grow w-full max-w-5xl mx-auto px-margin-mobile md:px-margin-desktop py-xl">
+<!-- Header: Month Selector & Summary Bar -->
+<div class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+<div class="flex flex-col gap-xs">
+<p class="text-secondary font-label-sm text-label-sm uppercase tracking-wider">当前查看周期</p>
+<div class="flex items-center gap-sm">
+<button class="p-1 hover:bg-surface-container-high rounded-full transition-colors active:scale-90">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<h2 class="font-display-md text-display-md text-on-surface">2026年 10月</h2>
+<button class="p-1 hover:bg-surface-container-high rounded-full transition-colors active:scale-90">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Summary Cards -->
+<div class="grid grid-cols-2 gap-md w-full md:w-auto">
+<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-border-light flex flex-col justify-center min-w-[160px]">
+<span class="text-secondary font-label-sm text-label-sm">本月支出</span>
+<span class="text-alert-red font-number-xl text-number-xl">-¥3,280.00</span>
+</div>
+<div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-border-light flex flex-col justify-center min-w-[160px]">
+<span class="text-secondary font-label-sm text-label-sm">本月结余</span>
+<span class="text-primary font-number-xl text-number-xl">+¥4,290.00</span>
+</div>
+</div>
+</div>
+<!-- Transactions Body -->
+<div class="space-y-xl">
+<!-- Group: Today -->
+<section>
+<div class="flex items-center gap-md mb-md">
+<h3 class="font-headline-lg text-headline-lg text-on-surface">今天</h3>
+<span class="text-secondary font-body-sm text-body-sm">10月24日, 星期四</span>
+<div class="flex-grow border-b border-border-light"></div>
+</div>
+<div class="space-y-sm">
+<!-- Item 1 -->
+<div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary-container text-on-primary-container">
+<span class="material-symbols-outlined text-[28px]">restaurant</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold">星巴克午餐</h4>
+<div class="flex items-center gap-md mt-0.5">
+<span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
+                                    支付宝
+                                </span>
+<span class="text-secondary font-body-sm text-body-sm italic">每日咖啡和三明治</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-xl">
+<span class="font-number-md text-number-md text-alert-red">-¥58.00</span>
+<div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 flex items-center justify-center rounded-xl bg-secondary-container text-on-secondary-container">
+<span class="material-symbols-outlined text-[28px]">directions_car</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold">滴滴打车</h4>
+<div class="flex items-center gap-md mt-0.5">
+<span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-[14px]">payments</span>
+                                    现金
+                                </span>
+<span class="text-secondary font-body-sm text-body-sm italic">去办公室通勤</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-xl">
+<span class="font-number-md text-number-md text-alert-red">-¥70.50</span>
+<div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Group: Yesterday -->
+<section>
+<div class="flex items-center gap-md mb-md">
+<h3 class="font-headline-lg text-headline-lg text-on-surface">昨天</h3>
+<span class="text-secondary font-body-sm text-body-sm">10月23日, 星期三</span>
+<div class="flex-grow border-b border-border-light"></div>
+</div>
+<div class="space-y-sm">
+<!-- Item 3: Income -->
+<div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 flex items-center justify-center rounded-xl bg-tertiary-fixed text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-[28px]">payments</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold">自由职业劳务费</h4>
+<div class="flex items-center gap-md mt-0.5">
+<span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-[14px]">account_balance</span>
+                                    银行转账
+                                </span>
+<span class="text-secondary font-body-sm text-body-sm italic">网页设计项目结项收入</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-xl">
+<span class="font-number-md text-number-md text-primary">+¥5,500.00</span>
+<div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 flex items-center justify-center rounded-xl bg-outline-variant text-on-surface-variant">
+<span class="material-symbols-outlined text-[28px]">shopping_bag</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface font-semibold">优衣库</h4>
+<div class="flex items-center gap-md mt-0.5">
+<span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
+                                    支付宝
+                                </span>
+<span class="text-secondary font-body-sm text-body-sm italic">新款冬装大衣</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-xl">
+<span class="font-number-md text-number-md text-alert-red">-¥699.00</span>
+<div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Asymmetric Decorative Content / Insights -->
+<div class="mt-2xl grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="md:col-span-2 relative overflow-hidden rounded-2xl bg-primary-container p-xl text-on-primary-container min-h-[200px] flex flex-col justify-end">
+<div class="relative z-10">
+<h3 class="font-display-md text-display-md mb-sm">有意识的储蓄</h3>
+<p class="font-body-lg text-body-lg max-w-md opacity-90">你本月有望比九月份多存15%的钱。请继续保持！</p>
+</div>
+</div>
+<div class="bg-surface-container-highest p-xl rounded-2xl border border-border-light flex flex-col justify-between">
+<span class="material-symbols-outlined text-[48px] text-primary">analytics</span>
+<div>
+<h4 class="font-headline-lg text-headline-lg mb-xs">支出结构</h4>
+<p class="text-secondary font-body-sm text-body-sm">外出就餐占本周支出的42%。</p>
+</div>
+<div class="mt-md w-full bg-surface-container-low rounded-full h-2">
+<div class="bg-primary h-full rounded-full w-[42%]"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-dim border-t border-border-light dark:border-outline-variant w-full py-lg flex flex-col md:flex-row justify-between items-center px-margin-desktop mt-auto gap-md">
+<div class="flex items-center gap-md">
+<span class="font-label-md text-label-md font-bold text-on-surface">随手记账</span>
+<span class="text-secondary dark:text-secondary-fixed font-body-sm text-body-sm">© 2026 随手记账</span>
+</div>
+
+</footer>
+<!-- Mobile Bottom NavBar (Visible on small screens) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-container-lowest border-t border-border-light flex items-center justify-around z-50">
+<a class="flex flex-col items-center text-secondary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-medium">总览</span>
+</a>
+<a class="flex flex-col items-center text-primary font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="text-[10px] font-medium">流水</span>
+</a>
+<div class="-translate-y-6">
+<button class="w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-lg flex items-center justify-center active:scale-90 transition-all">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center text-secondary" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-medium">统计</span>
+</a>
+<a class="flex flex-col items-center text-secondary" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="text-[10px] font-medium">账户</span>
+</a>
+</nav>
+
+
+
+
+
+
+
+
+
+
+</body></html>

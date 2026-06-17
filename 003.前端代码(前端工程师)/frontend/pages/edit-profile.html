@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>编辑个人资料 - 随手记账</title>
+  <script src="../assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="bg-surface text-on-background min-h-screen flex">
+  <!-- Desktop Side Navigation -->
+  <aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-surface-container-low border-r border-border-light flex flex-col p-lg z-50">
+    <div class="mb-xl">
+      <h1 class="font-headline-lg text-headline-lg font-bold text-primary">随手记账</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant opacity-70">理财，从每一笔开始</p>
+    </div>
+    <nav class="flex-grow space-y-sm">
+      <a href="./home.html" class="nav-item flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-md py-sm rounded-lg transition-all active:scale-95">
+        <span class="material-symbols-outlined">home</span>
+        <span class="font-body-md text-body-md">首页</span>
+      </a>
+      <a href="./transactions.html" class="nav-item flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-md py-sm rounded-lg transition-all active:scale-95">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="font-body-md text-body-md">账单</span>
+      </a>
+      <a href="./statistics.html" class="nav-item flex items-center gap-md text-on-surface-variant hover:bg-surface-container-high px-md py-sm rounded-lg transition-all active:scale-95">
+        <span class="material-symbols-outlined">leaderboard</span>
+        <span class="font-body-md text-body-md">统计</span>
+      </a>
+      <a href="./settings.html" class="nav-item flex items-center gap-md bg-primary-container text-on-primary-container rounded-lg px-md py-sm font-bold transition-all duration-200 active:scale-95">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="font-body-md text-body-md">设置</span>
+      </a>
+    </nav>
+    <div class="px-md mt-auto pt-lg">
+      <div class="flex items-center gap-sm p-sm rounded-xl bg-surface-container-low">
+        <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+          <span class="material-symbols-outlined">person</span>
+        </div>
+        <div>
+          <p class="font-label-md text-label-md font-bold">张伟</p>
+          <p class="font-label-sm text-label-sm text-on-surface-variant">普通用户</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow md:ml-64 p-margin-desktop bg-background pb-24 md:pb-0">
+    <!-- TopAppBar -->
+    <header class="flex justify-between items-center h-16 mb-xl">
+      <div class="flex items-center gap-md">
+        <a href="./settings.html" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors active:scale-90">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <div class="flex flex-col">
+          <h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">编辑个人资料</h2>
+          <div class="flex items-center gap-xs text-on-surface-variant opacity-60">
+            <span class="font-label-sm text-label-sm">设置</span>
+            <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+            <span class="font-label-sm text-label-sm">个人资料</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Canvas -->
+    <div class="max-w-3xl">
+      <div class="glass-card rounded-xl p-lg shadow-sm">
+        <!-- Avatar Section -->
+        <div class="flex flex-col items-center mb-xl border-b border-border-light pb-xl">
+          <div class="relative group cursor-pointer" id="avatarWrapper" title="点击更换头像">
+            <div id="avatarPreview" class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg bg-primary-container flex items-center justify-center text-on-primary-container transition-all">
+              <span id="avatarPlaceholder" class="material-symbols-outlined text-[64px]">person</span>
+              <img id="avatarImage" src="" alt="用户头像" class="w-full h-full object-cover hidden">
+            </div>
+            <button type="button" id="avatarEditBtn" class="absolute bottom-1 right-1 bg-primary text-white p-base rounded-full shadow-md border-2 border-white transition-transform active:scale-90" title="更换头像">
+              <span class="material-symbols-outlined text-sm">edit</span>
+            </button>
+          </div>
+          <input type="file" id="avatarInput" accept="image/*" class="hidden">
+          <button type="button" id="changeAvatarBtn" class="mt-md px-md py-sm text-primary font-label-md text-label-md border border-primary/20 rounded-lg hover:bg-surface-container-low transition-colors">
+            更换头像
+          </button>
+          <p id="avatarHint" class="mt-sm text-body-sm text-text-muted hidden"></p>
+        </div>
+
+        <!-- Form Section -->
+        <div class="space-y-lg">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+            <div class="space-y-xs">
+              <label class="font-label-md text-label-md text-on-surface-variant px-xs">姓名/用户名</label>
+              <input type="text" value="张伟 (Zhang Wei)" class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md">
+            </div>
+            <div class="space-y-xs">
+              <label class="font-label-md text-label-md text-on-surface-variant px-xs">专业/简介</label>
+              <input type="text" value="普通用户" class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md">
+            </div>
+          </div>
+
+          <div class="space-y-xs">
+            <label class="font-label-md text-label-md text-on-surface-variant px-xs">电子邮箱 (不可更改)</label>
+            <input type="email" value="zhang.wei@example.com" disabled class="w-full px-md py-sm bg-surface-container-low border border-border-light rounded-lg font-body-md text-body-md text-on-surface-variant cursor-not-allowed">
+          </div>
+
+          <div class="space-y-xs">
+            <label class="font-label-md text-label-md text-on-surface-variant px-xs">个人签名</label>
+            <textarea placeholder="介绍一下你自己..." rows="3" class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md"></textarea>
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="mt-2xl pt-lg border-t border-border-light flex items-center justify-center">
+          <div class="flex gap-md">
+            <button type="button" id="saveProfileBtn" class="px-xl py-sm bg-primary-container text-on-primary-container font-label-md text-label-md font-bold rounded-lg hover:shadow-lg transition-all active:scale-95 shadow-sm">
+              保存修改
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Helpful Tip Card -->
+      <div class="mt-lg p-md bg-surface-container-low rounded-xl flex gap-md items-start">
+        <span class="material-symbols-outlined text-primary">lightbulb</span>
+        <div>
+          <p class="font-label-md text-label-md font-bold text-primary">小贴士</p>
+          <p class="font-body-sm text-body-sm text-on-surface-variant mt-base">
+            完善的个人资料有助于我们在为您生成财务周报时提供更具个性化的理财建议。
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-container-lowest border-t border-border-light flex items-center justify-around z-50">
+    <a href="./home.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+      <span class="material-symbols-outlined">home</span>
+      <span class="text-[10px] font-medium">首页</span>
+    </a>
+    <a href="./transactions.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span class="text-[10px] font-medium">账单</span>
+    </a>
+    <a href="./statistics.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+      <span class="material-symbols-outlined">analytics</span>
+      <span class="text-[10px] font-medium">统计</span>
+    </a>
+    <a href="./settings.html" class="flex flex-col items-center gap-xs text-primary font-bold">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="text-[10px] font-medium">设置</span>
+    </a>
+  </nav>
+
+  <script src="../assets/js/shared.js"></script>
+  <script>
+    // Micro-interaction for inputs
+    const inputs = document.querySelectorAll('input, textarea');
+    inputs.forEach((input) => {
+      const label = input.parentElement.querySelector('label');
+      if (!label) return;
+      input.addEventListener('focus', () => {
+        label.style.color = '#006c49';
+      });
+      input.addEventListener('blur', () => {
+        label.style.color = '#3c4a42';
+      });
+    });
+
+    // Save button simulation
+    const saveBtn = document.getElementById('saveProfileBtn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        const originalText = saveBtn.innerText;
+        saveBtn.innerText = '正在保存...';
+        saveBtn.disabled = true;
+        saveBtn.classList.add('opacity-70');
+
+        setTimeout(() => {
+          saveBtn.innerText = '已成功保存';
+          saveBtn.classList.remove('bg-primary-container', 'opacity-70');
+          saveBtn.classList.add('bg-primary', 'text-white');
+
+          setTimeout(() => {
+            window.location.href = './settings.html';
+          }, 800);
+        }, 1000);
+      });
+    }
+
+    // Avatar upload preview (frontend only)
+    const avatarWrapper = document.getElementById('avatarWrapper');
+    const avatarEditBtn = document.getElementById('avatarEditBtn');
+    const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarImage = document.getElementById('avatarImage');
+    const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+    const avatarHint = document.getElementById('avatarHint');
+
+    function openAvatarPicker() {
+      if (avatarInput) avatarInput.click();
+    }
+
+    function showAvatarHint(message, isError = false) {
+      if (!avatarHint) return;
+      avatarHint.textContent = message;
+      avatarHint.classList.remove('hidden', 'text-error', 'text-text-muted');
+      avatarHint.classList.add(isError ? 'text-error' : 'text-text-muted');
+    }
+
+    function handleAvatarSelect(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showAvatarHint('请选择图片文件（JPG、PNG 等）', true);
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        showAvatarHint('图片大小请控制在 5MB 以内', true);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (avatarImage && avatarPlaceholder) {
+          avatarImage.src = e.target.result;
+          avatarImage.classList.remove('hidden');
+          avatarPlaceholder.classList.add('hidden');
+          showAvatarHint('头像预览已更新，保存后生效');
+        }
+      };
+      reader.onerror = () => {
+        showAvatarHint('图片读取失败，请重试', true);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    if (avatarInput) {
+      avatarInput.addEventListener('change', handleAvatarSelect);
+    }
+    [avatarWrapper, avatarEditBtn, changeAvatarBtn].forEach((el) => {
+      if (el) el.addEventListener('click', openAvatarPicker);
+    });
+  </script>
+</body>
+</html>

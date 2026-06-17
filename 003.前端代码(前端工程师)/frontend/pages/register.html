@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册 - 随手记账</title>
+  <script src="../assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <style>
+    .auth-brand-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-background min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed">
+  <main class="flex min-h-screen overflow-hidden">
+    <!-- Left Side: Brand Identity (Desktop Only) -->
+    <section class="hidden lg:flex lg:w-1/2 relative bg-primary-container items-center justify-center overflow-hidden">
+      <div class="absolute inset-0 opacity-20">
+        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 rounded-full bg-primary-fixed-dim blur-3xl"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 rounded-full bg-on-primary-fixed-variant blur-3xl"></div>
+      </div>
+
+      <div class="relative z-10 text-center px-xl">
+        <div class="mb-lg inline-flex items-center justify-center p-md bg-surface-container-lowest rounded-2xl shadow-xl">
+          <span class="material-symbols-outlined text-primary text-[48px]">account_balance_wallet</span>
+        </div>
+        <h1 class="font-display-lg text-display-lg text-white mb-md tracking-tight">随手记账</h1>
+        <p class="font-body-lg text-body-lg text-white opacity-90">开始您的财务健康之旅</p>
+        <div class="mt-2xl grid grid-cols-2 gap-md max-w-md mx-auto">
+          <div class="auth-brand-card p-md rounded-xl text-left">
+            <span class="material-symbols-outlined text-white mb-xs">verified</span>
+            <p class="font-label-sm text-label-sm text-white/80">专业记账</p>
+          </div>
+          <div class="auth-brand-card p-md rounded-xl text-left">
+            <span class="material-symbols-outlined text-white mb-xs">security</span>
+            <p class="font-label-sm text-label-sm text-white/80">数据加密</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Side: Registration Form -->
+    <section class="w-full lg:w-1/2 flex items-center justify-center p-md lg:p-2xl bg-surface">
+      <div class="w-full max-w-[440px]">
+        <!-- Mobile Logo -->
+        <div class="lg:hidden flex flex-col items-center mb-xl">
+          <div class="p-sm bg-primary-container rounded-xl mb-sm">
+            <span class="material-symbols-outlined text-white text-[32px]">account_balance_wallet</span>
+          </div>
+          <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold">随手记账</h2>
+          <p class="font-body-sm text-body-sm text-text-muted mt-xs">开始您的财务健康之旅</p>
+        </div>
+
+        <div class="mb-xl">
+          <h2 class="font-headline-lg text-headline-lg text-on-surface lg:block hidden">创建新账户</h2>
+          <p class="font-body-md text-body-md text-text-muted mt-xs lg:block hidden">欢迎加入随手记账，开启智能理财新篇章。</p>
+        </div>
+
+        <form id="registerForm" class="space-y-lg" onsubmit="event.preventDefault();">
+          <div class="space-y-xs">
+            <label for="username" class="font-label-md text-label-md text-on-surface-variant block">用户名</label>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">person</span>
+              <input id="username" type="text" placeholder="请输入您的用户名" class="w-full pl-[48px] pr-md py-[14px] bg-surface-container-low border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md text-body-md placeholder:text-outline/60">
+            </div>
+          </div>
+
+          <div class="space-y-xs">
+            <label for="password" class="font-label-md text-label-md text-on-surface-variant block">密码</label>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+              <input id="password" type="password" placeholder="请输入密码 (至少8位)" class="w-full pl-[48px] pr-md py-[14px] bg-surface-container-low border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md text-body-md placeholder:text-outline/60">
+              <button type="button" data-toggle-password="password" class="absolute right-md top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-[20px]">visibility_off</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-xs">
+            <label for="confirm-password" class="font-label-md text-label-md text-on-surface-variant block">确认密码</label>
+            <div class="relative group">
+              <span class="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">verified_user</span>
+              <input id="confirm-password" type="password" placeholder="请再次输入密码" class="w-full pl-[48px] pr-md py-[14px] bg-surface-container-low border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md text-body-md placeholder:text-outline/60">
+            </div>
+          </div>
+
+          <div class="flex items-start gap-sm">
+            <div class="flex items-center h-5">
+              <input id="terms" name="terms" type="checkbox" class="h-4 w-4 text-primary focus:ring-primary border-outline-variant rounded">
+            </div>
+            <div class="text-label-sm">
+              <label for="terms" class="font-body-sm text-body-sm text-text-muted">
+                我已阅读并同意
+                <a href="#" class="text-primary hover:underline">服务协议</a>
+                与
+                <a href="#" class="text-primary hover:underline">隐私政策</a>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-primary-container hover:bg-on-primary-fixed-variant text-white font-label-md text-label-md py-md rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all duration-200">
+            立即注册
+          </button>
+
+          <div class="text-center pt-lg">
+            <p class="font-body-sm text-body-sm text-text-muted">
+              已有账号？
+              <a href="../index.html" class="text-primary font-bold hover:underline transition-all">立即登录</a>
+            </p>
+          </div>
+        </form>
+
+        <footer class="mt-2xl text-center">
+          <p class="font-label-sm text-label-sm text-outline opacity-60">© 2026 随手记账 · 极简主义财务管理</p>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/auth.js"></script>
+</body>
+</html>

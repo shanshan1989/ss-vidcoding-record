@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>设置 - 随手记账</title>
+  <script src="../assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="bg-surface text-on-surface font-body-md">
+  <div class="flex min-h-screen">
+    <!-- Desktop Side Navigation -->
+    <nav class="hidden md:flex flex-col h-screen p-md gap-sm bg-surface-container h-screen w-64 fixed left-0 top-0 border-r border-border-light z-50">
+      <div class="flex items-center gap-md mb-lg px-xs">
+        <div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-on-primary">
+          <span class="material-symbols-outlined">account_balance_wallet</span>
+        </div>
+        <div>
+          <h1 class="font-headline-lg text-headline-lg font-black text-primary">随手记账</h1>
+          <p class="font-label-md text-label-md text-on-surface-variant">个人财务管理</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-xs flex-grow">
+        <a href="./home.html" class="nav-item flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors active:translate-x-1 duration-200">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span class="font-label-md text-label-md">首页</span>
+        </a>
+        <a href="./transactions.html" class="nav-item flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors active:translate-x-1 duration-200">
+          <span class="material-symbols-outlined">receipt_long</span>
+          <span class="font-label-md text-label-md">账单</span>
+        </a>
+        <a href="./statistics.html" class="nav-item flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors active:translate-x-1 duration-200">
+          <span class="material-symbols-outlined">analytics</span>
+          <span class="font-label-md text-label-md">统计</span>
+        </a>
+        <a href="./settings.html" class="nav-item flex items-center gap-md px-md py-sm rounded-lg font-bold transition-colors active:translate-x-1 duration-200">
+          <span class="material-symbols-outlined">settings</span>
+          <span class="font-label-md text-label-md">设置</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow md:ml-64 pb-24 md:pb-2xl">
+      <!-- Header Profile Section -->
+      <header class="bg-surface-container-lowest sticky top-0 z-40 px-margin-mobile md:px-margin-desktop py-lg flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-lg">
+          <div class="relative">
+            <div class="w-16 h-16 rounded-full object-cover border-2 border-primary-container bg-primary-container flex items-center justify-center text-on-primary-container">
+              <span class="material-symbols-outlined text-[32px]">person</span>
+            </div>
+            <div class="absolute bottom-0 right-0 w-5 h-5 bg-primary-container rounded-full border-2 border-white flex items-center justify-center">
+              <span class="material-symbols-outlined text-[12px] text-white">check</span>
+            </div>
+          </div>
+          <div>
+            <h2 class="font-headline-lg text-headline-lg text-on-surface">张伟 (Zhang Wei)</h2>
+            <p class="font-body-sm text-body-sm text-text-muted">普通用户 · 2023年加入</p>
+          </div>
+        </div>
+        <a href="./edit-profile.html" class="bg-primary text-on-primary px-lg py-sm rounded-xl font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all inline-block text-center">
+          编辑个人资料
+        </a>
+      </header>
+
+      <div class="px-margin-mobile md:px-margin-desktop mt-lg space-y-lg">
+        <!-- Bento Grid Layout for Settings Sections -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+          <!-- Section 2: Budget Settings -->
+          <div class="bg-surface-container-lowest rounded-xl p-lg card-shadow">
+            <h3 class="font-headline-lg text-headline-lg mb-lg flex items-center gap-sm">
+              <span class="material-symbols-outlined text-warning-yellow">savings</span>
+              月度预算
+            </h3>
+            <div class="space-y-lg">
+              <div>
+                <div class="flex justify-between items-end mb-sm">
+                  <span class="font-label-md text-label-md">十月预算</span>
+                  <span class="font-number-md text-number-md">¥ 8,000 / ¥ 12,000</span>
+                </div>
+                <div class="h-4 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-primary-container w-[66%] transition-all duration-1000"></div>
+                </div>
+                <p class="text-body-sm font-body-sm text-text-muted mt-sm">预算已执行 66%。剩余可用额度 ¥ 4,000。</p>
+              </div>
+              <div class="pt-md border-t border-border-light">
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs">设置月度目标</label>
+                <div class="flex gap-sm">
+                  <input type="text" value="12000" class="flex-grow bg-surface-container-low border-none rounded-lg px-md py-sm font-number-md text-number-md focus:ring-2 focus:ring-primary-container">
+                  <button type="button" class="bg-secondary-container text-on-secondary-container px-md py-sm rounded-lg font-label-md text-label-md hover:bg-surface-variant transition-colors">更新</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Category Management -->
+          <div class="bg-surface-container-lowest rounded-xl p-lg card-shadow lg:col-span-2">
+            <div class="flex justify-between items-center mb-lg">
+              <h3 class="font-headline-lg text-headline-lg flex items-center gap-sm">
+                <span class="material-symbols-outlined text-tertiary">category</span>
+                分类管理
+              </h3>
+              <a href="./categories.html" class="text-primary font-label-md text-label-md hover:underline">管理全部</a>
+            </div>
+            <div id="settingsCategoryGrid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-md">
+              <!-- Categories rendered dynamically from localStorage -->
+              <a href="./categories.html" class="flex flex-col items-center gap-sm group cursor-pointer">
+                <div class="w-14 h-14 rounded-2xl border-2 border-dashed border-outline-variant flex items-center justify-center text-outline group-hover:bg-surface-variant transition-all">
+                  <span class="material-symbols-outlined">add</span>
+                </div>
+                <span class="font-label-sm text-label-sm">添加分类</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Section 4: Payment Accounts -->
+          <div class="bg-surface-container-lowest rounded-xl p-lg card-shadow lg:col-span-3">
+            <h3 class="font-headline-lg text-headline-lg mb-lg flex items-center gap-sm">
+              <span class="material-symbols-outlined text-primary">account_balance</span>
+              支付账户管理
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+              <button type="button" class="flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light">
+                <span class="material-symbols-outlined text-primary-container text-[32px]">account_balance_wallet</span>
+                <div>
+                  <div class="font-label-md text-label-md">微信支付</div>
+                  <div class="text-body-sm font-body-sm text-text-muted">已绑定</div>
+                </div>
+              </button>
+              <button type="button" class="flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light">
+                <span class="material-symbols-outlined text-blue-600 text-[32px]">payments</span>
+                <div>
+                  <div class="font-label-md text-label-md">支付宝</div>
+                  <div class="text-body-sm font-body-sm text-text-muted">已绑定</div>
+                </div>
+              </button>
+              <button type="button" class="flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light">
+                <span class="material-symbols-outlined text-secondary text-[32px]">credit_card</span>
+                <div>
+                  <div class="font-label-md text-label-md">银行卡</div>
+                  <div class="text-body-sm font-body-sm text-text-muted">2 张已关联</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 5: App Preferences -->
+          <div class="lg:col-span-3 bg-surface-container-lowest rounded-xl p-lg card-shadow">
+            <h3 class="font-headline-lg text-headline-lg mb-lg flex items-center gap-sm">
+              <span class="material-symbols-outlined text-on-surface-variant">settings</span>
+              偏好设置
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+              <!-- Dark Mode -->
+              <div class="flex items-center justify-between p-md border border-border-light rounded-xl">
+                <div class="flex items-center gap-md">
+                  <span class="material-symbols-outlined">dark_mode</span>
+                  <span class="font-label-md text-label-md">深色模式</span>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="dark-mode-toggle" class="sr-only peer" onchange="SSJ.toggleDarkMode()">
+                  <div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+                </label>
+              </div>
+
+              <!-- Notification Time -->
+              <div class="flex items-center justify-between p-md border border-border-light rounded-xl">
+                <div class="flex items-center gap-md">
+                  <span class="material-symbols-outlined">notifications</span>
+                  <span class="font-label-md text-label-md">提醒时间</span>
+                </div>
+                <input type="time" value="21:00" class="bg-surface-container-low border-none rounded-lg px-sm py-xs font-label-md text-label-md">
+              </div>
+
+              <!-- Currency -->
+              <div class="flex items-center justify-between p-md border border-border-light rounded-xl">
+                <div class="flex items-center gap-md">
+                  <span class="material-symbols-outlined">currency_yuan</span>
+                  <span class="font-label-md text-label-md">主货币单位</span>
+                </div>
+                <select class="bg-surface-container-low border-none rounded-lg px-sm py-xs font-label-md text-label-md outline-none">
+                  <option>人民币 (¥)</option>
+                  <option>美元 ($)</option>
+                  <option>欧元 (€)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-lg pb-md flex justify-center">
+          <a href="../index.html" class="w-full max-w-md bg-primary text-on-primary py-md rounded-xl font-bold text-center hover:opacity-90 active:scale-95 transition-all shadow-sm">
+            退出登录
+          </a>
+        </div>
+      </div>
+
+      <!-- Footer Shell -->
+      <footer class="mt-2xl py-lg px-margin-desktop bg-surface-container-low border-t border-border-light flex flex-col md:flex-row justify-between items-center gap-md">
+        <div class="font-label-md text-label-md font-bold text-on-surface">© 2026 随手记账</div>
+        <div class="text-body-sm text-text-muted">版本 1.0.1</div>
+      </footer>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-container-lowest flex items-center justify-around border-t border-border-light z-50">
+      <a href="./home.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="text-[10px] font-medium">首页</span>
+      </a>
+      <a href="./transactions.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="text-[10px] font-medium">账单</span>
+      </a>
+      <a href="./statistics.html" class="flex flex-col items-center gap-xs text-on-surface-variant">
+        <span class="material-symbols-outlined">analytics</span>
+        <span class="text-[10px] font-medium">统计</span>
+      </a>
+      <a href="./settings.html" class="flex flex-col items-center gap-xs text-primary font-bold">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="text-[10px] font-medium">设置</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="../assets/js/shared.js"></script>
+  <script src="../assets/js/categories-data.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function renderSettingsCategories() {
+        const grid = document.getElementById('settingsCategoryGrid');
+        if (!grid) return;
+
+        const data = window.SSJCategories.loadCategories();
+        // Settings page shows expense categories preview (matching home.html style)
+        const expenseList = data.expense || [];
+
+        // Keep the add button at the end
+        const addButton = grid.lastElementChild;
+        grid.innerHTML = '';
+
+        expenseList.forEach((item) => {
+          const el = document.createElement('a');
+          el.href = './categories.html';
+          el.className = 'flex flex-col items-center gap-sm group cursor-pointer';
+          el.innerHTML = `
+            <div class="w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
+              <span class="material-symbols-outlined text-[28px]">${item.icon}</span>
+            </div>
+            <span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface transition-colors">${escapeHtml(item.name)}</span>
+          `;
+          grid.appendChild(el);
+        });
+
+        grid.appendChild(addButton);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        renderSettingsCategories();
+
+        const toggle = document.getElementById('dark-mode-toggle');
+        if (toggle) {
+          toggle.checked = document.documentElement.classList.contains('dark');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

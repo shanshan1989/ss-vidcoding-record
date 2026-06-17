@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Claude Code local session files
+.claude/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local

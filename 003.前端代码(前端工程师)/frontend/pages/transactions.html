@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>账单明细 - 随手记账</title>
+  <script src="../assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col">
+  <!-- Top Navigation Bar -->
+  <header class="flex justify-between items-center w-full px-margin-desktop h-16 sticky top-0 z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-sm transition-all duration-150">
+    <div class="flex items-center gap-md">
+      <h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">随手记账</h1>
+      <nav class="hidden md:flex gap-lg ml-xl">
+        <a href="./home.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">首页</a>
+        <a href="./transactions.html" class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary dark:border-primary-fixed pb-1 font-body-md text-body-md">账单</a>
+        <a href="./statistics.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">统计</a>
+        <a href="./settings.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">设置</a>
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-md">
+      <div class="relative hidden sm:block">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+        <input type="text" placeholder="搜索交易流水..." class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full focus:ring-2 focus:ring-primary/20 w-64 text-body-sm font-body-sm">
+      </div>
+      <a href="./settings.html" class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container flex items-center justify-center bg-surface-container-highest">
+        <span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow w-full max-w-5xl mx-auto px-margin-mobile md:px-margin-desktop py-xl pb-24 md:pb-0">
+    <!-- Header: Month Selector & Summary Bar -->
+    <div class="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
+      <div class="flex flex-col gap-xs">
+        <p class="text-secondary font-label-sm text-label-sm uppercase tracking-wider">当前查看周期</p>
+        <div class="flex items-center gap-sm">
+          <button type="button" class="p-1 hover:bg-surface-container-high rounded-full transition-colors active:scale-90">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <h2 class="font-display-md text-display-md text-on-surface">2026年 10月</h2>
+          <button type="button" class="p-1 hover:bg-surface-container-high rounded-full transition-colors active:scale-90">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-2 gap-md w-full md:w-auto">
+        <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-border-light flex flex-col justify-center min-w-[160px]">
+          <span class="text-secondary font-label-sm text-label-sm">本月支出</span>
+          <span class="text-alert-red font-number-xl text-number-xl">-¥3,280.00</span>
+        </div>
+        <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-border-light flex flex-col justify-center min-w-[160px]">
+          <span class="text-secondary font-label-sm text-label-sm">本月结余</span>
+          <span class="text-primary font-number-xl text-number-xl">+¥4,290.00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Transactions Body -->
+    <div class="space-y-xl">
+      <!-- Group: Today -->
+      <section>
+        <div class="flex items-center gap-md mb-md">
+          <h3 class="font-headline-lg text-headline-lg text-on-surface">今天</h3>
+          <span class="text-secondary font-body-sm text-body-sm">10月24日, 星期四</span>
+          <div class="flex-grow border-b border-border-light"></div>
+        </div>
+
+        <div class="space-y-sm">
+          <!-- Item 1 -->
+          <div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
+            <div class="flex items-center gap-lg">
+              <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary-container text-on-primary-container">
+                <span class="material-symbols-outlined text-[28px]">restaurant</span>
+              </div>
+              <div>
+                <h4 class="font-body-lg text-body-lg text-on-surface font-semibold">星巴克午餐</h4>
+                <div class="flex items-center gap-md mt-0.5">
+                  <span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+                    <span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
+                    支付宝
+                  </span>
+                  <span class="text-secondary font-body-sm text-body-sm italic">每日咖啡和三明治</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-xl">
+              <span class="font-number-md text-number-md text-alert-red">-¥58.00</span>
+              <div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
+            <div class="flex items-center gap-lg">
+              <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-secondary-container text-on-secondary-container">
+                <span class="material-symbols-outlined text-[28px]">directions_car</span>
+              </div>
+              <div>
+                <h4 class="font-body-lg text-body-lg text-on-surface font-semibold">滴滴打车</h4>
+                <div class="flex items-center gap-md mt-0.5">
+                  <span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+                    <span class="material-symbols-outlined text-[14px]">payments</span>
+                    现金
+                  </span>
+                  <span class="text-secondary font-body-sm text-body-sm italic">去办公室通勤</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-xl">
+              <span class="font-number-md text-number-md text-alert-red">-¥70.50</span>
+              <div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Group: Yesterday -->
+      <section>
+        <div class="flex items-center gap-md mb-md">
+          <h3 class="font-headline-lg text-headline-lg text-on-surface">昨天</h3>
+          <span class="text-secondary font-body-sm text-body-sm">10月23日, 星期三</span>
+          <div class="flex-grow border-b border-border-light"></div>
+        </div>
+
+        <div class="space-y-sm">
+          <!-- Item 3: Income -->
+          <div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
+            <div class="flex items-center gap-lg">
+              <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-tertiary-fixed text-on-tertiary-fixed">
+                <span class="material-symbols-outlined text-[28px]">payments</span>
+              </div>
+              <div>
+                <h4 class="font-body-lg text-body-lg text-on-surface font-semibold">自由职业劳务费</h4>
+                <div class="flex items-center gap-md mt-0.5">
+                  <span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+                    <span class="material-symbols-outlined text-[14px]">account_balance</span>
+                    银行转账
+                  </span>
+                  <span class="text-secondary font-body-sm text-body-sm italic">网页设计项目结项收入</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-xl">
+              <span class="font-number-md text-number-md text-primary">+¥5,500.00</span>
+              <div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
+            <div class="flex items-center gap-lg">
+              <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-outline-variant text-on-surface-variant">
+                <span class="material-symbols-outlined text-[28px]">shopping_bag</span>
+              </div>
+              <div>
+                <h4 class="font-body-lg text-body-lg text-on-surface font-semibold">优衣库</h4>
+                <div class="flex items-center gap-md mt-0.5">
+                  <span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+                    <span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
+                    支付宝
+                  </span>
+                  <span class="text-secondary font-body-sm text-body-sm italic">新款冬装大衣</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-xl">
+              <span class="font-number-md text-number-md text-alert-red">-¥699.00</span>
+              <div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Insights -->
+    <div class="mt-2xl grid grid-cols-1 md:grid-cols-3 gap-lg">
+      <div class="md:col-span-2 relative overflow-hidden rounded-2xl bg-primary-container p-xl text-on-primary-container min-h-[200px] flex flex-col justify-end">
+        <div class="relative z-10">
+          <h3 class="font-display-md text-display-md mb-sm">有意识的储蓄</h3>
+          <p class="font-body-lg text-body-lg max-w-md opacity-90">你本月有望比九月份多存15%的钱。请继续保持！</p>
+        </div>
+      </div>
+      <div class="bg-surface-container-highest p-xl rounded-2xl border border-border-light flex flex-col justify-between">
+        <span class="material-symbols-outlined text-[48px] text-primary">analytics</span>
+        <div>
+          <h4 class="font-headline-lg text-headline-lg mb-xs">支出结构</h4>
+          <p class="text-secondary font-body-sm text-body-sm">外出就餐占本周支出的42%。</p>
+        </div>
+        <div class="mt-md w-full bg-surface-container-low rounded-full h-2">
+          <div class="bg-primary h-full rounded-full w-[42%]"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="hidden md:flex bg-surface-container-low dark:bg-surface-dim border-t border-border-light dark:border-outline-variant w-full py-lg flex-col md:flex-row justify-between items-center px-margin-desktop mt-auto gap-md">
+    <div class="flex items-center gap-md">
+      <span class="font-label-md text-label-md font-bold text-on-surface">随手记账</span>
+      <span class="text-secondary dark:text-secondary-fixed font-body-sm text-body-sm">© 2026 随手记账</span>
+    </div>
+  </footer>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-container-lowest border-t border-border-light flex items-center justify-around z-50">
+    <a href="./home.html" class="flex flex-col items-center text-secondary">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="text-[10px] font-medium">总览</span>
+    </a>
+    <a href="./transactions.html" class="flex flex-col items-center text-primary font-bold">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span class="text-[10px] font-medium">流水</span>
+    </a>
+    <a href="./statistics.html" class="flex flex-col items-center text-secondary">
+      <span class="material-symbols-outlined">analytics</span>
+      <span class="text-[10px] font-medium">统计</span>
+    </a>
+    <a href="./settings.html" class="flex flex-col items-center text-secondary">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="text-[10px] font-medium">设置</span>
+    </a>
+  </nav>
+
+  <script src="../assets/js/shared.js"></script>
+</body>
+</html>

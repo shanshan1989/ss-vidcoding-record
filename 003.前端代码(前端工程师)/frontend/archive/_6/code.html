@@ -1,0 +1,300 @@
+<!DOCTYPE html><html class="light" lang="zh-CN" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#711419",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#002113",
+                    "surface-container-low": "#eef6ee",
+                    "inverse-primary": "#4edea3",
+                    "surface-tint": "#006c49",
+                    "secondary-container": "#e1e3e4",
+                    "tertiary-fixed-dim": "#ffb3af",
+                    "surface-container-high": "#e3eae3",
+                    "alert-red": "#EF4444",
+                    "outline-variant": "#bbcabf",
+                    "primary": "#006c49",
+                    "background": "#f4fbf4",
+                    "warning-yellow": "#F59E0B",
+                    "on-tertiary-fixed": "#410005",
+                    "secondary-fixed": "#e1e3e4",
+                    "primary-container": "#10b981",
+                    "on-background": "#161d19",
+                    "on-primary-fixed-variant": "#005236",
+                    "surface-dim": "#d4dcd5",
+                    "on-tertiary-fixed-variant": "#842225",
+                    "outline": "#6c7a71",
+                    "on-error-container": "#93000a",
+                    "on-surface-variant": "#3c4a42",
+                    "surface": "#f4fbf4",
+                    "on-secondary": "#ffffff",
+                    "secondary-fixed-dim": "#c5c7c8",
+                    "text-muted": "#6B7280",
+                    "border-light": "#E5E7EB",
+                    "error-container": "#ffdad6",
+                    "secondary": "#5c5f60",
+                    "inverse-surface": "#2b322d",
+                    "tertiary-fixed": "#ffdad7",
+                    "on-secondary-fixed-variant": "#454748",
+                    "on-error": "#ffffff",
+                    "text-main": "#1F2937",
+                    "tertiary": "#a43a3a",
+                    "error": "#ba1a1a",
+                    "inverse-on-surface": "#ebf3eb",
+                    "on-surface": "#161d19",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#191c1d",
+                    "on-primary-container": "#00422b",
+                    "surface-variant": "#dde4dd",
+                    "surface-container-highest": "#dde4dd",
+                    "primary-fixed": "#6ffbbe",
+                    "on-secondary-container": "#626566",
+                    "surface-container": "#e8f0e9",
+                    "primary-fixed-dim": "#4edea3",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#fc7c78",
+                    "surface-bright": "#f4fbf4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "margin-desktop": "32px",
+                    "lg": "24px",
+                    "gutter": "16px",
+                    "margin-mobile": "16px",
+                    "xs": "4px",
+                    "md": "16px",
+                    "base": "4px",
+                    "2xl": "48px",
+                    "xl": "32px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "number-xl": ["Inter"],
+                    "display-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "number-md": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                    "number-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-md": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "number-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f4fbf4;
+            color: #161d19;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .sidebar-active {
+            background-color: #10b981 !important;
+            color: #00422b !important;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+    </style>
+</head>
+<body class="flex min-h-screen overflow-x-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-surface dark:bg-surface-dim border-r border-border-light dark:border-outline flex flex-col py-lg z-50">
+<div class="px-md mb-xl">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed-dim">随手记账</h1>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">理财，从每一笔开始</p>
+</div>
+<nav class="flex-grow space-y-xs">
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-sm transition-colors transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-body-md text-body-md">首页</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-sm transition-colors transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-body-md text-body-md">账单</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-container-high rounded-lg mx-sm transition-colors transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
+<span class="font-body-md text-body-md">统计</span>
+</a>
+<!-- Active State: 设置 -->
+<a class="flex items-center gap-md px-md py-sm bg-primary-container text-on-primary-container rounded-lg mx-sm font-bold transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">设置</span>
+</a>
+</nav>
+<div class="px-md mt-auto pt-lg">
+<div class="flex items-center gap-sm p-sm rounded-xl bg-surface-container-low">
+<img alt="用户头像" class="w-10 h-10 rounded-full object-cover" data-alt="A professional close-up portrait of a middle-aged man with a friendly expression and short black hair, wearing a high-quality tailored charcoal grey suit. The lighting is soft and cinematic with a neutral studio background that creates a clean and minimalist aesthetic. The color palette is sophisticated, focusing on cool tones and emerald green accents to match the professional finance application's identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgDUygulS_nFsb9rM8kI7iwdrGCY8qMUSTdfSu3ZEtTKb0OAkVDCyyDAoq2L4bRFLcMD_vH2ktO8Jw1GIyyYj_PObbJvP1vfu4WT9ZCwhwEpHVin6VgeX_zaTSy-sSmZXJVb8gvqFf9tntI09dwdW1yGwiKaRe1tUoKcu_B4bFFcj0wI8IM4Qtrzvs4CgPXdkF2PaCruKbxLiYZMg3IQFHPgxNNbQ7zZpiM7DJrP31_Qgye9bO5CnufzU8I6ZcAWFuNqyNlA6RJ-0T">
+<div>
+<p class="font-label-md text-label-md font-bold">张伟</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">专业账户</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow ml-64 p-margin-desktop bg-background">
+<!-- TopAppBar (Contextual) -->
+<header class="flex justify-between items-center h-16 mb-xl">
+<div class="flex flex-col">
+<h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">编辑个人资料</h2>
+<div class="flex items-center gap-xs text-on-surface-variant opacity-60">
+<span class="font-label-sm text-label-sm">设置</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<span class="font-label-sm text-label-sm">个人资料</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm rounded-full hover:bg-surface-container-high transition-colors" onclick="const btn = this; const originalText = btn.innerText; btn.innerText = '正在保存...'; btn.disabled = true; btn.classList.add('opacity-70'); setTimeout(() =&gt; { btn.innerText = '已成功保存'; btn.classList.remove('bg-primary-container'); btn.classList.add('bg-primary', 'text-white'); setTimeout(() =&gt; { window.location.href = '{{DATA:SCREEN:SCREEN_2}}'; }, 800); }, 1000);">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="max-w-3xl">
+<div class="glass-card rounded-xl p-lg shadow-sm">
+<!-- Avatar Section -->
+<div class="flex flex-col items-center mb-xl border-b border-border-light pb-xl">
+<div class="relative group">
+<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
+<img alt="用户头像" class="w-full h-full object-cover" data-alt="A detailed headshot of a handsome professional man with dark hair and a confident, kind smile. He is set against a clean, light mint green background that feels fresh and airy. The lighting is perfectly balanced, highlighting his features without harsh shadows, maintaining a premium and trustworthy aesthetic consistent with a modern personal finance tool's visual identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYaH1_wX7NUV4Z3gr5q6sKys7YNwq3eI9T0oyk0JQHDueryspUYPfX5V9SLHZ2TI9P6-jhaW5uZpCWchmtZ-tz0NFQXODfe1Q-fuvzlzhbIhZDUHOMiVPOZz688kc4h_gWa7jsNFnh7Fa3YNDR0A5XwZll6Vovd4itk5UQ5JBJuLDGMgd3BoxjHylJo9mECVQOzCP1gBRfhbQewWQiVOd891S3agh2QZ8f3vDifRKqKJX1YkL3CT6OYDkwz1s4LJk3AP0NMMuPaF5M">
+</div>
+<button class="absolute bottom-1 right-1 bg-primary text-white p-base rounded-full shadow-md border-2 border-white transition-transform active:scale-90" title="更换头像">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+<button class="mt-md px-md py-sm text-primary font-label-md text-label-md border border-primary/20 rounded-lg hover:bg-surface-container-low transition-colors">
+                        更换头像
+                    </button>
+</div>
+<!-- Form Section -->
+<div class="space-y-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant px-xs">姓名/用户名</label>
+<input class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md" type="text" value="张伟 (Zhang Wei)">
+</div>
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant px-xs">专业/简介</label>
+<input class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md" type="text" value="专业账户">
+</div>
+</div>
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant px-xs">电子邮箱 (不可更改)</label>
+<input class="w-full px-md py-sm bg-surface-container-low border border-border-light rounded-lg font-body-md text-body-md text-on-surface-variant cursor-not-allowed" disabled="" type="email" value="zhang.wei@example.com">
+</div>
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface-variant px-xs">个人签名</label>
+<textarea class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md" placeholder="介绍一下你自己..." rows="3"></textarea>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="mt-2xl pt-lg border-t border-border-light flex items-center justify-center">
+
+<div class="flex gap-md">
+<button class="px-xl py-sm bg-primary-container text-on-primary-container font-label-md text-label-md font-bold rounded-lg hover:shadow-lg transition-all active:scale-95 shadow-sm" onclick="const btn = this; btn.innerText = '正在保存...'; btn.disabled = true; btn.classList.add('opacity-70'); setTimeout(() =&gt; { btn.innerText = '已成功保存'; btn.classList.remove('bg-primary-container'); btn.classList.add('bg-primary', 'text-white'); setTimeout(() =&gt; { window.location.href = '{{DATA:SCREEN:SCREEN_2}}'; }, 800); }, 1000);">
+                            保存修改
+                        </button>
+</div>
+</div>
+</div>
+<!-- Helpful Tip Card (Minimalist Pattern) -->
+<div class="mt-lg p-md bg-surface-container-low rounded-xl flex gap-md items-start">
+<span class="material-symbols-outlined text-primary" data-icon="lightbulb" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+<div>
+<p class="font-label-md text-label-md font-bold text-primary">小贴士</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-base">
+                        完善的个人资料有助于我们在为您生成财务周报时提供更具个性化的职场理财建议。
+                    </p>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interaction for inputs
+        const inputs = document.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('label').style.color = '#006c49';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('label').style.color = '#3c4a42';
+            });
+        });
+
+        // Simple button active state simulation
+        const saveBtn = document.querySelector('button.bg-primary-container');
+        saveBtn.addEventListener('click', () => {
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = '正在保存...';
+            saveBtn.disabled = true;
+            saveBtn.classList.add('opacity-70');
+            
+            setTimeout(() => {
+                saveBtn.innerText = '已成功保存';
+                saveBtn.classList.remove('bg-primary-container');
+                saveBtn.classList.add('bg-primary', 'text-white');
+                
+                setTimeout(() => {
+                    saveBtn.innerText = originalText;
+                    saveBtn.disabled = false;
+                    saveBtn.classList.remove('opacity-70', 'bg-primary', 'text-white');
+                    saveBtn.classList.add('bg-primary-container');
+                }, 2000);
+            }, 1000);
+        });
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>

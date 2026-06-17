@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>随手记账 - 每天三秒，钱花得明白</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/locale/zh-cn.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- 登录注册界面 -->
+        <div class="auth-screen" id="auth-screen">
+            <div class="auth-container">
+                <div class="auth-logo">💰</div>
+                <h1 class="auth-title">随手记账</h1>
+                <p class="auth-slogan">每天三秒，钱花得明白</p>
+
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-auth="login">登录</button>
+                    <button class="auth-tab" data-auth="register">注册</button>
+                </div>
+
+                <form class="auth-form" id="auth-form-login">
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="login-username" placeholder="用户名" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="login-password" placeholder="密码" autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary auth-submit">登录</button>
+                </form>
+
+                <form class="auth-form" id="auth-form-register" style="display: none;">
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="register-username" placeholder="设置用户名" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="register-password" placeholder="设置密码" autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="register-password-confirm" placeholder="确认密码" autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary auth-submit">注册</button>
+                </form>
+
+                <p class="auth-hint" id="auth-hint">登录后即可开始记账</p>
+            </div>
+        </div>
+
+        <!-- 页面容器 -->
+        <main id="main-content" class="main-content">
+            <!-- 首页：快速记账 -->
+            <section id="page-home" class="page active">
+                <header class="home-header">
+                    <div class="month-selector" id="home-month-selector">
+                        <span class="month-text"></span>
+                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                    </div>
+                </header>
+
+                <div class="balance-card">
+                    <div class="balance-label">本月结余</div>
+                    <div class="balance-amount" id="month-balance">¥0.00</div>
+                    <div class="balance-summary">
+                        <div class="summary-item income">
+                            <span class="summary-label">本月收入</span>
+                            <span class="summary-value" id="month-income">¥0.00</span>
+                        </div>
+                        <div class="summary-item expense">
+                            <span class="summary-label">本月支出</span>
+                            <span class="summary-value" id="month-expense">¥0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="budget-card" id="budget-card" style="display: none;">
+                    <div class="budget-header">
+                        <span class="budget-title">本月预算</span>
+                        <span class="budget-ratio" id="budget-ratio">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="budget-progress"></div>
+                    </div>
+                    <div class="budget-detail">
+                        <span id="budget-spent">已用 ¥0</span>
+                        <span id="budget-total">预算 ¥0</span>
+                    </div>
+                    <div class="budget-alert" id="budget-alert"></div>
+                </div>
+
+                <div class="today-expense">
+                    今日支出：<strong id="today-expense">¥0.00</strong>
+                </div>
+
+                <div class="transaction-type-tabs">
+                    <button class="type-tab active" data-type="expense">支出</button>
+                    <button class="type-tab" data-type="income">收入</button>
+                </div>
+
+                <div class="category-scroll">
+                    <div class="category-list" id="category-list"></div>
+                </div>
+
+                <div class="input-display">
+                    <div class="selected-category" id="selected-category">请选择分类</div>
+                    <div class="amount-input" id="amount-input">0</div>
+                </div>
+
+                <div class="extra-options">
+                    <button class="option-btn" id="btn-note">
+                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        <span id="note-text">添加备注</span>
+                    </button>
+                    <button class="option-btn" id="btn-time">
+                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                        <span id="time-text">现在</span>
+                    </button>
+                    <button class="option-btn" id="btn-account">
+                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                        <span id="account-text">现金</span>
+                    </button>
+                </div>
+
+                <div class="keypad">
+                    <button class="key" data-key="1">1</button>
+                    <button class="key" data-key="2">2</button>
+                    <button class="key" data-key="3">3</button>
+                    <button class="key key-action" data-key="backspace">
+                        <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"/></svg>
+                    </button>
+                    <button class="key" data-key="4">4</button>
+                    <button class="key" data-key="5">5</button>
+                    <button class="key" data-key="6">6</button>
+                    <button class="key key-action" data-key="clear">C</button>
+                    <button class="key" data-key="7">7</button>
+                    <button class="key" data-key="8">8</button>
+                    <button class="key" data-key="9">9</button>
+                    <button class="key key-submit" data-key="confirm">确认</button>
+                    <button class="key key-zero" data-key="0">0</button>
+                    <button class="key" data-key=".">.</button>
+                    <button class="key key-action" data-key="date">日期</button>
+                </div>
+            </section>
+
+            <!-- 明细页 -->
+            <section id="page-details" class="page">
+                <header class="page-header">
+                    <h1>账单明细</h1>
+                    <div class="header-actions">
+                        <button class="icon-btn" id="btn-search">
+                            <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="month-summary">
+                    <div class="month-selector" id="details-month-selector">
+                        <span class="month-text"></span>
+                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                    </div>
+                    <div class="summary-row">
+                        <div>
+                            <span class="summary-small">收入</span>
+                            <div class="summary-amount income" id="details-income">¥0.00</div>
+                        </div>
+                        <div>
+                            <span class="summary-small">支出</span>
+                            <div class="summary-amount expense" id="details-expense">¥0.00</div>
+                        </div>
+                        <div>
+                            <span class="summary-small">结余</span>
+                            <div class="summary-amount" id="details-balance">¥0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-bar" id="search-bar" style="display: none;">
+                    <input type="text" id="search-input" placeholder="搜索分类或备注...">
+                    <button class="icon-btn" id="btn-close-search">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                </div>
+
+                <div class="transaction-list" id="transaction-list">
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" width="64" height="64"><path fill="#ccc" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                        <p>本月还没有记账哦，快去记一笔吧</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 统计页 -->
+            <section id="page-stats" class="page">
+                <header class="page-header">
+                    <h1>统计报表</h1>
+                    <div class="month-selector" id="stats-month-selector">
+                        <span class="month-text"></span>
+                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M7 10l5 5 5-5z"/></svg>
+                    </div>
+                </header>
+
+                <div class="stats-tabs">
+                    <button class="stats-tab active" data-tab="overview">总览</button>
+                    <button class="stats-tab" data-tab="category">分类</button>
+                    <button class="stats-tab" data-tab="trend">趋势</button>
+                    <button class="stats-tab" data-tab="compare">对比</button>
+                </div>
+
+                <div class="stats-content">
+                    <!-- 总览 -->
+                    <div class="stats-panel active" id="panel-overview">
+                        <div class="overview-cards">
+                            <div class="overview-card">
+                                <span class="overview-label">本月收入</span>
+                                <span class="overview-value income" id="overview-income">¥0.00</span>
+                            </div>
+                            <div class="overview-card">
+                                <span class="overview-label">本月支出</span>
+                                <span class="overview-value expense" id="overview-expense">¥0.00</span>
+                            </div>
+                            <div class="overview-card">
+                                <span class="overview-label">本月结余</span>
+                                <span class="overview-value" id="overview-balance">¥0.00</span>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="overview-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 分类 -->
+                    <div class="stats-panel" id="panel-category">
+                        <div class="chart-container pie-chart">
+                            <canvas id="category-chart"></canvas>
+                        </div>
+                        <div class="category-ranking" id="category-ranking"></div>
+                    </div>
+
+                    <!-- 趋势 -->
+                    <div class="stats-panel" id="panel-trend">
+                        <div class="chart-container">
+                            <canvas id="trend-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 对比 -->
+                    <div class="stats-panel" id="panel-compare">
+                        <div class="chart-container">
+                            <canvas id="compare-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 我的页 -->
+            <section id="page-profile" class="page">
+                <header class="page-header">
+                    <h1>我的</h1>
+                    <div class="user-info">
+                        <span class="user-name" id="user-name"></span>
+                        <button class="btn-logout" id="btn-logout">退出</button>
+                    </div>
+                </header>
+
+                <div class="profile-section">
+                    <div class="section-title">资产管理</div>
+                    <div class="menu-list">
+                        <div class="menu-item" data-action="accounts">
+                            <span class="menu-icon">💰</span>
+                            <span class="menu-text">账户管理</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="section-title">记账设置</div>
+                    <div class="menu-list">
+                        <div class="menu-item" data-action="categories">
+                            <span class="menu-icon">🏷️</span>
+                            <span class="menu-text">分类管理</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                        <div class="menu-item" data-action="budget">
+                            <span class="menu-icon">📊</span>
+                            <span class="menu-text">预算设置</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                        <div class="menu-item" data-action="reminder">
+                            <span class="menu-icon">🔔</span>
+                            <span class="menu-text">记账提醒</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="section-title">数据与安全</div>
+                    <div class="menu-list">
+                        <div class="menu-item" data-action="backup">
+                            <span class="menu-icon">💾</span>
+                            <span class="menu-text">数据备份</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                        <div class="menu-item" data-action="restore">
+                            <span class="menu-icon">📥</span>
+                            <span class="menu-text">数据恢复</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                        <div class="menu-item" data-action="export">
+                            <span class="menu-icon">📤</span>
+                            <span class="menu-text">导出数据</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                        <div class="menu-item" data-action="theme">
+                            <span class="menu-icon">🎨</span>
+                            <span class="menu-text">主题设置</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="section-title">关于</div>
+                    <div class="menu-list">
+                        <div class="menu-item" data-action="feedback">
+                            <span class="menu-icon">💬</span>
+                            <span class="menu-text">反馈与建议</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                        <div class="menu-item" data-action="about">
+                            <span class="menu-icon">ℹ️</span>
+                            <span class="menu-text">关于随手记账</span>
+                            <svg class="menu-arrow" viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-page="home">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>首页</span>
+            </button>
+            <button class="nav-item" data-page="details">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                <span>明细</span>
+            </button>
+            <button class="nav-item" data-page="stats">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                <span>统计</span>
+            </button>
+            <button class="nav-item" data-page="profile">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>我的</span>
+            </button>
+        </nav>
+
+        <!-- 通用弹窗 -->
+        <div class="modal" id="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">标题</h3>
+                    <button class="modal-close" id="modal-close">
+                        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-body"></div>
+            </div>
+        </div>
+
+        <!-- 底部操作表 -->
+        <div class="action-sheet" id="action-sheet">
+            <div class="action-sheet-overlay"></div>
+            <div class="action-sheet-content">
+                <div class="action-sheet-title" id="action-sheet-title"></div>
+                <div class="action-sheet-body" id="action-sheet-body"></div>
+                <button class="action-sheet-cancel" id="action-sheet-cancel">取消</button>
+            </div>
+        </div>
+
+        <!-- 轻提示 -->
+        <div class="toast" id="toast"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>首页 - 随手记账</title>
+  <script src="../assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <style>
+    .category-btn:hover .category-icon,
+    .category-btn.active .category-icon {
+      background-color: #006c49;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+  <!-- Desktop Side Navigation -->
+  <aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container p-md gap-sm border-r border-border-light z-50">
+    <div class="flex items-center gap-sm px-xs mb-lg">
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-primary">account_balance_wallet</span>
+      </div>
+      <div>
+        <h1 class="font-headline-lg text-headline-lg font-black text-primary">随手记账</h1>
+        <p class="font-label-sm text-label-sm text-secondary">个人财务管理</p>
+      </div>
+    </div>
+    <nav class="flex flex-col gap-xs flex-grow">
+      <a href="./home.html" class="nav-item flex items-center gap-md px-md py-sm rounded-lg transition-colors active:translate-x-1 duration-200">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="font-label-md text-label-md">首页</span>
+      </a>
+      <a href="./transactions.html" class="nav-item flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors active:translate-x-1 duration-200">
+        <span class="material-symbols-outlined">receipt_long</span>
+        <span class="font-label-md text-label-md">账单</span>
+      </a>
+      <a href="./statistics.html" class="nav-item flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors active:translate-x-1 duration-200">
+        <span class="material-symbols-outlined">analytics</span>
+        <span class="font-label-md text-label-md">统计</span>
+      </a>
+      <a href="./settings.html" class="nav-item flex items-center gap-md px-md py-sm text-on-surface-variant hover:bg-surface-variant rounded-lg transition-colors active:translate-x-1 duration-200">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="font-label-md text-label-md">设置</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-grow md:ml-64 px-margin-mobile md:px-margin-desktop py-lg max-w-[1440px] mx-auto w-full pb-24 md:pb-0">
+    <!-- Top Bar (Mobile) -->
+    <header class="md:hidden flex justify-between items-center mb-lg">
+      <h1 class="font-headline-lg-mobile text-headline-lg-mobile font-black text-primary">随手记账</h1>
+      <a href="./settings.html" class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden border border-border-light flex items-center justify-center">
+        <span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+      </a>
+    </header>
+
+    <!-- Bento Grid Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+      <!-- Top Summary Card -->
+      <section class="lg:col-span-12 bg-surface-container-lowest card-shadow rounded-xl p-lg flex flex-col md:flex-row justify-between items-center gap-lg border border-border-light">
+        <div class="flex-1 text-center md:text-left">
+          <p class="font-label-sm text-label-sm text-text-muted mb-xs">剩余结余</p>
+          <h2 class="font-display-md text-display-md text-primary">¥ 8,420.50</h2>
+        </div>
+        <div class="h-px w-full md:h-12 md:w-px bg-border-light"></div>
+        <div class="flex-1 text-center">
+          <p class="font-label-sm text-label-sm text-text-muted mb-xs">本月收入</p>
+          <h3 class="font-number-xl text-number-xl text-on-surface">¥ 12,000</h3>
+        </div>
+        <div class="h-px w-full md:h-12 md:w-px bg-border-light"></div>
+        <div class="flex-1 text-center md:text-right">
+          <p class="font-label-sm text-label-sm text-text-muted mb-xs">本月支出</p>
+          <h3 class="font-number-xl text-number-xl text-tertiary">¥ 3,579.50</h3>
+        </div>
+      </section>
+
+      <!-- Budget Progress -->
+      <section class="lg:col-span-12 bg-surface-container-lowest card-shadow rounded-xl p-lg border border-border-light">
+        <div class="flex justify-between items-end mb-md">
+          <div>
+            <h4 class="font-headline-lg text-headline-lg text-on-surface">本月预算</h4>
+            <p class="font-body-sm text-body-sm text-text-muted">您的娱乐预算已使用 85%</p>
+          </div>
+          <div class="text-right">
+            <span class="font-number-md text-number-md text-warning-yellow">¥ 1,200 / ¥ 1,500</span>
+          </div>
+        </div>
+        <div class="relative w-full h-4 bg-surface-container rounded-full overflow-hidden mb-md">
+          <div class="absolute left-0 top-0 h-full bg-warning-yellow transition-all duration-1000 ease-out" style="width: 85%;"></div>
+        </div>
+        <div class="flex items-center gap-sm p-sm bg-tertiary-fixed rounded-lg text-on-tertiary-fixed-variant">
+          <span class="material-symbols-outlined text-[20px]">report_problem</span>
+          <p class="font-label-sm text-label-sm">提醒：即将达到月度限额。建议减少非必要支出。</p>
+        </div>
+      </section>
+
+      <!-- Transaction Entry Area -->
+      <section class="lg:col-span-7 bg-surface-container-lowest card-shadow rounded-xl p-lg border border-border-light flex flex-col gap-lg">
+        <div class="space-y-md">
+          <div class="flex bg-surface-container-low p-xs rounded-lg mb-md" id="toggle-container">
+            <button id="btn-expense" type="button" data-type="expense" class="flex-1 py-sm text-label-md font-bold rounded-md transition-all bg-primary-container text-on-primary-container">支出</button>
+            <button id="btn-income" type="button" data-type="income" class="flex-1 py-sm text-label-md font-medium text-secondary hover:bg-surface-variant rounded-md transition-all">收入</button>
+          </div>
+
+          <div class="relative">
+            <label class="font-label-sm text-label-sm text-text-muted mb-xs block">交易金额</label>
+            <div class="flex items-center gap-sm">
+              <span id="currency-symbol" class="font-display-md text-display-md text-primary">¥</span>
+              <input id="amount-input" type="text" value="0.00" readonly class="w-full bg-transparent border-none focus:ring-0 font-display-md text-display-md text-on-surface p-0">
+            </div>
+          </div>
+
+          <div class="bg-surface-container-low rounded-lg p-md flex items-center gap-sm border border-border-light">
+            <span class="material-symbols-outlined text-secondary">edit_note</span>
+            <input type="text" placeholder="添加备注..." class="bg-transparent border-none focus:ring-0 font-body-md text-body-md w-full p-0">
+          </div>
+        </div>
+
+        <!-- Numerical Keypad -->
+        <div class="grid grid-cols-3 gap-md">
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">1</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">2</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">3</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">4</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">5</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">6</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">7</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">8</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">9</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">.</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-container-high font-number-xl text-number-xl flex items-center justify-center transition-all">0</button>
+          <button type="button" class="keypad-button h-16 rounded-xl bg-surface-variant font-number-xl text-number-xl flex items-center justify-center transition-all text-error">
+            <span class="material-symbols-outlined" data-icon="backspace">backspace</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Category Selection -->
+      <section class="lg:col-span-5 bg-surface-container-lowest card-shadow rounded-xl p-lg border border-border-light">
+        <h4 class="font-label-md text-label-md text-text-muted mb-lg">选择分类</h4>
+        <div id="homeCategoryGrid" class="grid grid-cols-3 sm:grid-cols-4 gap-md">
+          <!-- Categories rendered dynamically from localStorage -->
+        </div>
+
+        <div class="mt-lg">
+          <button type="button" class="w-full bg-primary text-on-primary font-bold py-lg rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-md">
+            <span class="material-symbols-outlined">check_circle</span>
+            确认入账
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="bottom-nav md:hidden fixed bottom-0 left-0 right-0 bg-surface-container-low flex justify-around items-center h-16 z-50 px-md">
+    <a href="./home.html" class="flex flex-col items-center text-primary">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span class="font-label-sm text-[10px]">总览</span>
+    </a>
+    <a href="./transactions.html" class="flex flex-col items-center text-secondary">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <span class="font-label-sm text-[10px]">流水</span>
+    </a>
+    <a href="./statistics.html" class="flex flex-col items-center text-secondary">
+      <span class="material-symbols-outlined">analytics</span>
+      <span class="font-label-sm text-[10px]">报表</span>
+    </a>
+    <a href="./settings.html" class="flex flex-col items-center text-secondary">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="font-label-sm text-[10px]">设置</span>
+    </a>
+  </nav>
+
+  <script src="../assets/js/shared.js"></script>
+  <script src="../assets/js/categories-data.js"></script>
+  <script src="../assets/js/keypad.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function renderHomeCategories() {
+        const grid = document.getElementById('homeCategoryGrid');
+        if (!grid) return;
+
+        const data = window.SSJCategories.loadCategories();
+        const expenseList = data.expense || [];
+        grid.innerHTML = '';
+
+        expenseList.forEach((item) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'category-btn group flex flex-col items-center gap-xs';
+          btn.innerHTML = `
+            <div class="category-icon w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
+              <span class="material-symbols-outlined">${item.icon}</span>
+            </div>
+            <span class="font-label-sm text-label-sm text-on-surface-variant">${escapeHtml(item.name)}</span>
+          `;
+          grid.appendChild(btn);
+        });
+
+        // Add "more" button
+        const moreBtn = document.createElement('a');
+        moreBtn.href = './categories.html';
+        moreBtn.className = 'category-btn group flex flex-col items-center gap-xs';
+        moreBtn.innerHTML = `
+          <div class="category-icon w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
+            <span class="material-symbols-outlined">grid_view</span>
+          </div>
+          <span class="font-label-sm text-label-sm text-on-surface-variant">更多</span>
+        `;
+        grid.appendChild(moreBtn);
+      }
+
+      document.addEventListener('DOMContentLoaded', renderHomeCategories);
+    })();
+  </script>
+</body>
+</html>
