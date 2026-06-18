@@ -262,5 +262,10 @@
   </nav>
 
   <script src="../assets/js/shared.js"></script>
+  <script>
+    if (!SSJ.isLoggedIn()) {
+      window.location.href = '../index.html';
+    }
+  </script>
 </body>
 </html>

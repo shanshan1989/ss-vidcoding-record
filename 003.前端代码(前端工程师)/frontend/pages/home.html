@@ -227,7 +227,14 @@
         grid.appendChild(moreBtn);
       }
 
-      document.addEventListener('DOMContentLoaded', renderHomeCategories);
+      document.addEventListener('DOMContentLoaded', () => {
+        // 检查登录状态
+        if (!SSJ.isLoggedIn()) {
+          window.location.href = '../index.html';
+          return;
+        }
+        renderHomeCategories();
+      });
     })();
   </script>
 </body>

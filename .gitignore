@@ -20,3 +20,7 @@
 
 # MCP config (contains sensitive tokens)
 .mcp.json
+
+# Backend node_modules
+003.前端代码(前端工程师)/backend/node_modules/
+003.前端代码(前端工程师)/backend/.env

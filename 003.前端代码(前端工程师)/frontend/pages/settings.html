@@ -61,8 +61,8 @@
             </div>
           </div>
           <div>
-            <h2 class="font-headline-lg text-headline-lg text-on-surface">张伟 (Zhang Wei)</h2>
-            <p class="font-body-sm text-body-sm text-text-muted">普通用户 · 2023年加入</p>
+            <h2 id="user-display-name" class="font-headline-lg text-headline-lg text-on-surface">加载中...</h2>
+            <p class="font-body-sm text-body-sm text-text-muted">普通用户</p>
           </div>
         </div>
         <a href="./edit-profile.html" class="bg-primary text-on-primary px-lg py-sm rounded-xl font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all inline-block text-center">
@@ -196,9 +196,9 @@
         </div>
 
         <div class="pt-lg pb-md flex justify-center">
-          <a href="../index.html" class="w-full max-w-md bg-primary text-on-primary py-md rounded-xl font-bold text-center hover:opacity-90 active:scale-95 transition-all shadow-sm">
+          <button onclick="SSJ.logout()" class="w-full max-w-md bg-error text-white py-md rounded-xl font-bold text-center hover:opacity-90 active:scale-95 transition-all shadow-sm">
             退出登录
-          </a>
+          </button>
         </div>
       </div>
 
@@ -271,6 +271,19 @@
       }
 
       document.addEventListener('DOMContentLoaded', () => {
+        // 检查登录状态
+        const user = SSJ.getUserSession();
+        if (!user) {
+          window.location.href = '../index.html';
+          return;
+        }
+
+        // 显示用户信息
+        const userNameEl = document.getElementById('user-display-name');
+        if (userNameEl && user) {
+          userNameEl.textContent = user.nickname || user.username;
+        }
+
         renderSettingsCategories();
 
         const toggle = document.getElementById('dark-mode-toggle');

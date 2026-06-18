@@ -382,6 +382,11 @@
 
   <script src="../assets/js/shared.js"></script>
   <script>
+    // Auth check
+    if (!SSJ.isLoggedIn()) {
+      window.location.href = '../index.html';
+    }
+
     // Month selector interactivity
     document.querySelectorAll('header button').forEach((btn) => {
       btn.addEventListener('click', function () {
