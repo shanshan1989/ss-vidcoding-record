@@ -9,5 +9,8 @@ const CategoryController = require('../controllers/categoryController');
  * @access  Private
  */
 router.get('/', authenticate, CategoryController.list);
+router.post('/', authenticate, CategoryController.create);
+router.put('/:id', authenticate, CategoryController.update);
+router.delete('/:id', authenticate, CategoryController.delete);
 
 module.exports = router;

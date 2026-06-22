@@ -6,13 +6,16 @@ const homeRoutes = require('./routes/home');
 const categoryRoutes = require('./routes/categories');
 const transactionRoutes = require('./routes/transactions');
 const statisticsRoutes = require('./routes/statistics');
+const userRoutes = require('./routes/users');
+const accountRoutes = require('./routes/accounts');
+const budgetRoutes = require('./routes/budgets');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 中间件
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // 请求日志（开发环境）
@@ -29,6 +32,9 @@ app.use('/api/home', homeRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/statistics', statisticsRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/accounts', accountRoutes);
+app.use('/api/budgets', budgetRoutes);
 
 // 健康检查
 app.get('/api/health', (req, res) => {
@@ -64,6 +70,9 @@ app.listen(PORT, () => {
 ║  - GET  /api/transactions/recent  (最近交易)   ║
 ║  - GET  /api/transactions/summary (月度汇总)   ║
 ║  - GET  /api/statistics/*   (统计报表)         ║
+║  - GET/PUT /api/users/me  (用户资料)           ║
+║  - CRUD  /api/accounts/*  (账户管理)          ║
+║  - CRUD  /api/budgets/*   (预算管理)          ║
 ║  - GET  /api/health        (健康检查)          ║
 ╚════════════════════════════════════════════════╝
   `);

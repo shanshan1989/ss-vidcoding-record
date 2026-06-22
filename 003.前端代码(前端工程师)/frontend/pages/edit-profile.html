@@ -40,11 +40,11 @@
     </nav>
     <div class="px-md mt-auto pt-lg">
       <div class="flex items-center gap-sm p-sm rounded-xl bg-surface-container-low">
-        <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
-          <span class="material-symbols-outlined">person</span>
+        <div id="sidebarAvatar" class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container overflow-hidden">
+          <span id="sidebarAvatarIcon" class="material-symbols-outlined">person</span>
         </div>
         <div>
-          <p class="font-label-md text-label-md font-bold">张伟</p>
+          <p id="sidebarUsername" class="font-label-md text-label-md font-bold">加载中...</p>
           <p class="font-label-sm text-label-sm text-on-surface-variant">普通用户</p>
         </div>
       </div>
@@ -96,23 +96,14 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
             <div class="space-y-xs">
               <label class="font-label-md text-label-md text-on-surface-variant px-xs">姓名/用户名</label>
-              <input type="text" value="张伟 (Zhang Wei)" class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md">
+              <input type="text" id="nicknameInput" value="" placeholder="输入昵称" class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md">
             </div>
             <div class="space-y-xs">
               <label class="font-label-md text-label-md text-on-surface-variant px-xs">专业/简介</label>
-              <input type="text" value="普通用户" class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md">
+              <input type="text" id="signatureInput" value="" placeholder="简单介绍一下自己" class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md">
             </div>
           </div>
 
-          <div class="space-y-xs">
-            <label class="font-label-md text-label-md text-on-surface-variant px-xs">电子邮箱 (不可更改)</label>
-            <input type="email" value="zhang.wei@example.com" disabled class="w-full px-md py-sm bg-surface-container-low border border-border-light rounded-lg font-body-md text-body-md text-on-surface-variant cursor-not-allowed">
-          </div>
-
-          <div class="space-y-xs">
-            <label class="font-label-md text-label-md text-on-surface-variant px-xs">个人签名</label>
-            <textarea placeholder="介绍一下你自己..." rows="3" class="w-full px-md py-sm bg-surface-container-lowest border border-border-light rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-body-md text-body-md"></textarea>
-          </div>
         </div>
 
         <!-- Footer Actions -->
@@ -160,41 +151,33 @@
 
   <script src="../assets/js/shared.js"></script>
   <script>
-    // Micro-interaction for inputs
-    const inputs = document.querySelectorAll('input, textarea');
-    inputs.forEach((input) => {
-      const label = input.parentElement.querySelector('label');
-      if (!label) return;
-      input.addEventListener('focus', () => {
-        label.style.color = '#006c49';
-      });
-      input.addEventListener('blur', () => {
-        label.style.color = '#3c4a42';
-      });
-    });
+    let pendingAvatarUrl = null;
 
-    // Save button simulation
-    const saveBtn = document.getElementById('saveProfileBtn');
-    if (saveBtn) {
-      saveBtn.addEventListener('click', () => {
-        const originalText = saveBtn.innerText;
-        saveBtn.innerText = '正在保存...';
-        saveBtn.disabled = true;
-        saveBtn.classList.add('opacity-70');
-
-        setTimeout(() => {
-          saveBtn.innerText = '已成功保存';
-          saveBtn.classList.remove('bg-primary-container', 'opacity-70');
-          saveBtn.classList.add('bg-primary', 'text-white');
-
-          setTimeout(() => {
-            window.location.href = './settings.html';
-          }, 800);
-        }, 1000);
-      });
+    async function loadProfile() {
+      const user = SSJ.getUserSession();
+      if (!user) { window.location.href = '../index.html'; return; }
+      try {
+        const res = await SSJ.apiRequest('/users/me', 'GET');
+        const u = (res.data?.data || res.data);
+        if (!u) return;
+        document.getElementById('nicknameInput').value = u.nickname || '';
+        document.getElementById('signatureInput').value = u.signature || '';
+        // Sidebar
+        document.getElementById('sidebarUsername').textContent = u.nickname || u.username;
+        if (u.avatar_url) {
+          document.getElementById('avatarImage').src = u.avatar_url;
+          document.getElementById('avatarImage').classList.remove('hidden');
+          document.getElementById('avatarPlaceholder').classList.add('hidden');
+          const sidebarIcon = document.getElementById('sidebarAvatarIcon');
+          if (sidebarIcon) {
+            const sa = document.getElementById('sidebarAvatar');
+            sa.innerHTML = `<img src="${u.avatar_url}" class="w-full h-full rounded-full object-cover">`;
+          }
+        }
+      } catch (e) { console.error(e); }
     }
 
-    // Avatar upload preview (frontend only)
+    // Avatar upload
     const avatarWrapper = document.getElementById('avatarWrapper');
     const avatarEditBtn = document.getElementById('avatarEditBtn');
     const changeAvatarBtn = document.getElementById('changeAvatarBtn');
@@ -203,11 +186,7 @@
     const avatarPlaceholder = document.getElementById('avatarPlaceholder');
     const avatarHint = document.getElementById('avatarHint');
 
-    function openAvatarPicker() {
-      if (avatarInput) avatarInput.click();
-    }
-
-    function showAvatarHint(message, isError = false) {
+    function showAvatarHint(message, isError) {
       if (!avatarHint) return;
       avatarHint.textContent = message;
       avatarHint.classList.remove('hidden', 'text-error', 'text-text-muted');
@@ -217,38 +196,54 @@
     function handleAvatarSelect(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
-
-      if (!file.type.startsWith('image/')) {
-        showAvatarHint('请选择图片文件（JPG、PNG 等）', true);
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        showAvatarHint('图片大小请控制在 5MB 以内', true);
-        return;
-      }
-
+      if (!file.type.startsWith('image/')) { showAvatarHint('请选择图片文件', true); return; }
+      if (file.size > 5 * 1024 * 1024) { showAvatarHint('图片大小请控制在 5MB 以内', true); return; }
       const reader = new FileReader();
       reader.onload = (e) => {
-        if (avatarImage && avatarPlaceholder) {
-          avatarImage.src = e.target.result;
-          avatarImage.classList.remove('hidden');
-          avatarPlaceholder.classList.add('hidden');
-          showAvatarHint('头像预览已更新，保存后生效');
-        }
+        pendingAvatarUrl = e.target.result;
+        avatarImage.src = pendingAvatarUrl;
+        avatarImage.classList.remove('hidden');
+        avatarPlaceholder.classList.add('hidden');
+        showAvatarHint('头像已更新，保存后生效');
       };
-      reader.onerror = () => {
-        showAvatarHint('图片读取失败，请重试', true);
-      };
+      reader.onerror = () => showAvatarHint('图片读取失败', true);
       reader.readAsDataURL(file);
     }
 
-    if (avatarInput) {
-      avatarInput.addEventListener('change', handleAvatarSelect);
-    }
-    [avatarWrapper, avatarEditBtn, changeAvatarBtn].forEach((el) => {
-      if (el) el.addEventListener('click', openAvatarPicker);
+    avatarInput.addEventListener('change', handleAvatarSelect);
+    [avatarWrapper, avatarEditBtn, changeAvatarBtn].forEach(el => { if (el) el.addEventListener('click', () => avatarInput.click()); });
+
+    // Save
+    document.getElementById('saveProfileBtn').addEventListener('click', async function () {
+      const btn = this;
+      btn.innerText = '正在保存...';
+      btn.disabled = true;
+      btn.classList.add('opacity-70');
+      try {
+        const payload = {
+          nickname: document.getElementById('nicknameInput').value.trim(),
+          signature: document.getElementById('signatureInput').value.trim()
+        };
+        if (pendingAvatarUrl) payload.avatar_url = pendingAvatarUrl;
+        const res = await SSJ.apiRequest('/users/me', 'PUT', payload);
+        if (res.success || res.data?.success) {
+          btn.innerText = '已成功保存';
+          btn.classList.remove('bg-primary-container', 'opacity-70');
+          btn.classList.add('bg-primary', 'text-white');
+          setTimeout(() => { window.location.href = './settings.html'; }, 800);
+        } else {
+          btn.innerText = '保存失败';
+          btn.disabled = false;
+          btn.classList.remove('opacity-70');
+        }
+      } catch (e) {
+        btn.innerText = '保存失败';
+        btn.disabled = false;
+        btn.classList.remove('opacity-70');
+      }
     });
+
+    document.addEventListener('DOMContentLoaded', loadProfile);
   </script>
 </body>
 </html>

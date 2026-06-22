@@ -53,7 +53,7 @@
       <header class="bg-surface-container-lowest sticky top-0 z-40 px-margin-mobile md:px-margin-desktop py-lg flex justify-between items-center shadow-sm">
         <div class="flex items-center gap-lg">
           <div class="relative">
-            <div class="w-16 h-16 rounded-full object-cover border-2 border-primary-container bg-primary-container flex items-center justify-center text-on-primary-container">
+            <div id="userAvatar" class="w-16 h-16 rounded-full object-cover border-2 border-primary-container bg-primary-container flex items-center justify-center text-on-primary-container">
               <span class="material-symbols-outlined text-[32px]">person</span>
             </div>
             <div class="absolute bottom-0 right-0 w-5 h-5 bg-primary-container rounded-full border-2 border-white flex items-center justify-center">
@@ -82,19 +82,19 @@
             <div class="space-y-lg">
               <div>
                 <div class="flex justify-between items-end mb-sm">
-                  <span class="font-label-md text-label-md">十月预算</span>
-                  <span class="font-number-md text-number-md">¥ 8,000 / ¥ 12,000</span>
+                  <span id="budgetMonthLabel" class="font-label-md text-label-md">本月预算</span>
+                  <span id="budgetProgressText" class="font-number-md text-number-md">¥ 0 / ¥ 0</span>
                 </div>
                 <div class="h-4 bg-surface-container-high rounded-full overflow-hidden">
-                  <div class="h-full bg-primary-container w-[66%] transition-all duration-1000"></div>
+                  <div id="budgetBar" class="h-full bg-primary-container transition-all duration-1000" style="width: 0%"></div>
                 </div>
-                <p class="text-body-sm font-body-sm text-text-muted mt-sm">预算已执行 66%。剩余可用额度 ¥ 4,000。</p>
+                <p id="budgetHint" class="text-body-sm font-body-sm text-text-muted mt-sm">加载中...</p>
               </div>
               <div class="pt-md border-t border-border-light">
                 <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs">设置月度目标</label>
                 <div class="flex gap-sm">
-                  <input type="text" value="12000" class="flex-grow bg-surface-container-low border-none rounded-lg px-md py-sm font-number-md text-number-md focus:ring-2 focus:ring-primary-container">
-                  <button type="button" class="bg-secondary-container text-on-secondary-container px-md py-sm rounded-lg font-label-md text-label-md hover:bg-surface-variant transition-colors">更新</button>
+                  <input type="number" id="budgetAmountInput" placeholder="输入预算金额" class="flex-grow bg-surface-container-low border-none rounded-lg px-md py-sm font-number-md text-number-md focus:ring-2 focus:ring-primary-container">
+                  <button type="button" id="budgetUpdateBtn" class="bg-secondary-container text-on-secondary-container px-md py-sm rounded-lg font-label-md text-label-md hover:bg-surface-variant transition-colors">更新</button>
                 </div>
               </div>
             </div>
@@ -126,29 +126,7 @@
               <span class="material-symbols-outlined text-primary">account_balance</span>
               支付账户管理
             </h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
-              <button type="button" class="flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light">
-                <span class="material-symbols-outlined text-primary-container text-[32px]">account_balance_wallet</span>
-                <div>
-                  <div class="font-label-md text-label-md">微信支付</div>
-                  <div class="text-body-sm font-body-sm text-text-muted">已绑定</div>
-                </div>
-              </button>
-              <button type="button" class="flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light">
-                <span class="material-symbols-outlined text-blue-600 text-[32px]">payments</span>
-                <div>
-                  <div class="font-label-md text-label-md">支付宝</div>
-                  <div class="text-body-sm font-body-sm text-text-muted">已绑定</div>
-                </div>
-              </button>
-              <button type="button" class="flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light">
-                <span class="material-symbols-outlined text-secondary text-[32px]">credit_card</span>
-                <div>
-                  <div class="font-label-md text-label-md">银行卡</div>
-                  <div class="text-body-sm font-body-sm text-text-muted">2 张已关联</div>
-                </div>
-              </button>
-            </div>
+            <div id="accountsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-lg"></div>
           </div>
 
           <!-- Section 5: App Preferences -->
@@ -170,25 +148,15 @@
                 </label>
               </div>
 
-              <!-- Notification Time -->
-              <div class="flex items-center justify-between p-md border border-border-light rounded-xl">
-                <div class="flex items-center gap-md">
-                  <span class="material-symbols-outlined">notifications</span>
-                  <span class="font-label-md text-label-md">提醒时间</span>
-                </div>
-                <input type="time" value="21:00" class="bg-surface-container-low border-none rounded-lg px-sm py-xs font-label-md text-label-md">
-              </div>
-
               <!-- Currency -->
               <div class="flex items-center justify-between p-md border border-border-light rounded-xl">
                 <div class="flex items-center gap-md">
                   <span class="material-symbols-outlined">currency_yuan</span>
                   <span class="font-label-md text-label-md">主货币单位</span>
                 </div>
-                <select class="bg-surface-container-low border-none rounded-lg px-sm py-xs font-label-md text-label-md outline-none">
-                  <option>人民币 (¥)</option>
-                  <option>美元 ($)</option>
-                  <option>欧元 (€)</option>
+                <select id="currencySelect" class="bg-surface-container-low border-none rounded-lg px-sm py-xs font-label-md text-label-md outline-none">
+                  <option value="CNY">人民币 (¥)</option>
+                  <option value="USD">美元 ($)</option>
                 </select>
               </div>
             </div>
@@ -232,29 +200,203 @@
 
   <script src="../assets/js/shared.js"></script>
   <script src="../assets/js/categories-data.js"></script>
+
+  <!-- Account Modal -->
+  <div id="accountModal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center">
+    <div class="bg-surface-container-lowest rounded-xl p-lg shadow-xl w-96 max-w-[90vw]">
+      <div class="flex justify-between items-center mb-lg">
+        <h3 id="accountModalTitle" class="font-headline-lg text-headline-lg text-on-surface">添加账户</h3>
+        <button type="button" onclick="closeAccountModal()" class="p-sm hover:bg-surface-variant rounded-lg material-symbols-outlined text-on-surface">close</button>
+      </div>
+      <div class="space-y-md">
+        <div>
+          <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs">账户名称</label>
+          <input type="text" id="accNameInput" placeholder="如：微信钱包" class="w-full bg-surface-container-low border-none rounded-lg px-md py-sm font-label-md text-label-md focus:ring-2 focus:ring-primary">
+        </div>
+        <div>
+          <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs">账户类型</label>
+          <select id="accTypeSelect" class="w-full bg-surface-container-low border-none rounded-lg px-md py-sm font-label-md text-label-md outline-none">
+            <option value="electronic">电子支付（微信/支付宝）</option>
+            <option value="cash">现金</option>
+            <option value="bank">银行卡</option>
+            <option value="credit">信用卡</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs">当前余额</label>
+          <input type="number" id="accBalanceInput" placeholder="0.00" class="w-full bg-surface-container-low border-none rounded-lg px-md py-sm font-label-md text-label-md focus:ring-2 focus:ring-primary">
+        </div>
+      </div>
+      <div class="flex gap-sm mt-lg">
+        <button type="button" id="accDeleteBtn" onclick="deleteAccount()" class="hidden bg-error text-white px-md py-sm rounded-lg font-label-md text-label-md hover:opacity-90">删除</button>
+        <button type="button" onclick="saveAccount()" class="flex-1 bg-primary text-on-primary px-md py-sm rounded-lg font-label-md text-label-md hover:opacity-90">保存</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
       'use strict';
 
-      function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+      let currentYearMonth = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
+      let currentAccounts = [];
+      let editingAccountId = null;
+
+      // ============ User Profile ============
+      async function loadUserProfile() {
+        try {
+          const res = await SSJ.apiRequest('/users/me', 'GET');
+          const user = (res.data?.data || res.data);
+          if (!user) return;
+          document.getElementById('user-display-name').textContent = user.nickname || user.username;
+          const avatarEl = document.getElementById('userAvatar');
+          if (user.avatar_url) {
+            avatarEl.innerHTML = `<img src="${user.avatar_url}" class="w-full h-full rounded-full object-cover">`;
+          }
+          // Currency
+          const currencyEl = document.getElementById('currencySelect');
+          if (currencyEl && user.currency) {
+            currencyEl.value = user.currency;
+          }
+        } catch (e) { console.error(e); }
       }
 
-      function renderSettingsCategories() {
+      // ============ Budget ============
+      async function loadBudget() {
+        try {
+          const res = await SSJ.apiRequest(`/budgets?year_month=${currentYearMonth}`, 'GET');
+          const d = res.data?.data || res.data;
+          if (!d) return;
+          const budget = d.total_budget;
+          if (budget) {
+            const budgetAmount = Number(budget.budget_amount);
+            document.getElementById('budgetAmountInput').value = budgetAmount;
+            // Fetch current month expense for progress
+            const expRes = await SSJ.apiRequest(`/statistics/yearly-summary?year=${new Date().getFullYear()}&month=${new Date().getMonth()+1}`, 'GET');
+            const expData = expRes.data?.data || expRes.data;
+            const spent = expData ? Number(expData.total_expense) : 0;
+            const pct = budgetAmount > 0 ? Math.min((spent / budgetAmount) * 100, 100) : 0;
+            document.getElementById('budgetBar').style.width = pct + '%';
+            document.getElementById('budgetProgressText').textContent = `¥ ${spent.toLocaleString()} / ¥ ${budgetAmount.toLocaleString()}`;
+            document.getElementById('budgetHint').textContent = budgetAmount > 0 ? `剩余可用 ¥ ${Math.max(budgetAmount - spent, 0).toLocaleString()}` : '请设置月度预算';
+          } else {
+            document.getElementById('budgetProgressText').textContent = '¥ 0 / ¥ 0';
+            document.getElementById('budgetHint').textContent = '请设置月度预算';
+          }
+          const months = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+          const m = parseInt(currentYearMonth.split('-')[1]);
+          document.getElementById('budgetMonthLabel').textContent = months[m - 1] + '预算';
+        } catch (e) { console.error(e); }
+      }
+
+      document.getElementById('budgetUpdateBtn').addEventListener('click', async () => {
+        const amount = document.getElementById('budgetAmountInput').value;
+        if (!amount || isNaN(amount)) return;
+        try {
+          await SSJ.apiRequest('/budgets', 'POST', { year_month: currentYearMonth, budget_amount: parseFloat(amount) });
+          loadBudget();
+        } catch (e) { console.error(e); }
+      });
+
+      // ============ Accounts ============
+      async function loadAccounts() {
+        try {
+          const res = await SSJ.apiRequest('/accounts', 'GET');
+          currentAccounts = res.data?.data || res.data || [];
+          renderAccounts();
+        } catch (e) { console.error(e); }
+      }
+
+      function renderAccounts() {
+        const grid = document.getElementById('accountsGrid');
+        if (currentAccounts.length === 0) {
+          grid.innerHTML = '<div class="col-span-3 text-text-muted text-body-sm text-center py-lg">暂无账户，请点击下方添加</div>';
+        }
+        currentAccounts.forEach(acc => {
+          const icons = { electronic: 'account_balance_wallet', cash: 'payments', bank: 'account_balance', credit: 'credit_card', other: 'more_horiz' };
+          const colors = { electronic: '#07C160', cash: '#1976D2', bank: '#9C27B0', credit: '#F57C00', other: '#607D8B' };
+          const el = document.createElement('button');
+          el.type = 'button';
+          el.className = 'flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light';
+          el.innerHTML = `
+            <span class="material-symbols-outlined text-[32px]" style="color:${colors[acc.type] || '#607D8B'}">${icons[acc.type] || 'more_horiz'}</span>
+            <div>
+              <div class="font-label-md text-label-md">${acc.name}</div>
+              <div class="text-body-sm font-body-sm text-text-muted">¥ ${Number(acc.current_balance).toLocaleString()}</div>
+            </div>`;
+          el.addEventListener('click', () => openAccountModal(acc));
+          grid.appendChild(el);
+        });
+        // Add button
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light border-dashed';
+        addBtn.innerHTML = `<span class="material-symbols-outlined text-[32px] text-text-muted">add</span><div class="font-label-md text-label-md text-text-muted">添加账户</div>`;
+        addBtn.addEventListener('click', () => openAccountModal(null));
+        grid.appendChild(addBtn);
+      }
+
+      function openAccountModal(acc) {
+        editingAccountId = acc ? acc.id : null;
+        document.getElementById('accountModalTitle').textContent = acc ? '编辑账户' : '添加账户';
+        document.getElementById('accNameInput').value = acc ? acc.name : '';
+        document.getElementById('accTypeSelect').value = acc ? acc.type : 'electronic';
+        document.getElementById('accBalanceInput').value = acc ? acc.current_balance : '';
+        document.getElementById('accDeleteBtn').classList.toggle('hidden', !acc);
+        document.getElementById('accountModal').classList.remove('hidden');
+      }
+
+      window.closeAccountModal = function () {
+        document.getElementById('accountModal').classList.add('hidden');
+        editingAccountId = null;
+      };
+
+      window.saveAccount = async function () {
+        const name = document.getElementById('accNameInput').value.trim();
+        const type = document.getElementById('accTypeSelect').value;
+        const balance = parseFloat(document.getElementById('accBalanceInput').value) || 0;
+        if (!name) return;
+        try {
+          if (editingAccountId) {
+            await SSJ.apiRequest(`/accounts/${editingAccountId}`, 'PUT', { name, type, current_balance: balance });
+          } else {
+            await SSJ.apiRequest('/accounts', 'POST', { name, type, current_balance: balance, initial_balance: balance });
+          }
+          closeAccountModal();
+          loadAccounts();
+        } catch (e) { console.error(e); }
+      };
+
+      window.deleteAccount = async function () {
+        if (!editingAccountId) return;
+        if (!confirm('确定删除该账户？')) return;
+        try {
+          await SSJ.apiRequest(`/accounts/${editingAccountId}`, 'DELETE');
+          closeAccountModal();
+          loadAccounts();
+        } catch (e) { console.error(e); }
+      };
+
+      // ============ Categories ============
+      async function loadSettingsCategories() {
+        try {
+          const [expRes, incRes] = await Promise.all([
+            SSJ.apiRequest('/categories?type=expense', 'GET'),
+            SSJ.apiRequest('/categories?type=income', 'GET')
+          ]);
+          const expCats = expRes.data?.data || expRes.data || [];
+          const incCats = incRes.data?.data || incRes.data || [];
+          renderSettingsCategories([...expCats, ...incCats]);
+        } catch (e) { console.error(e); }
+      }
+
+      function renderSettingsCategories(cats) {
         const grid = document.getElementById('settingsCategoryGrid');
         if (!grid) return;
-
-        const data = window.SSJCategories.loadCategories();
-        // Settings page shows expense categories preview (matching home.html style)
-        const expenseList = data.expense || [];
-
-        // Keep the add button at the end
         const addButton = grid.lastElementChild;
         grid.innerHTML = '';
-
-        expenseList.forEach((item) => {
+        cats.forEach((item) => {
           const el = document.createElement('a');
           el.href = './categories.html';
           el.className = 'flex flex-col items-center gap-sm group cursor-pointer';
@@ -262,34 +404,37 @@
             <div class="w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
               <span class="material-symbols-outlined text-[28px]">${item.icon}</span>
             </div>
-            <span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface transition-colors">${escapeHtml(item.name)}</span>
-          `;
+            <span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-on-surface transition-colors">${item.name}</span>`;
           grid.appendChild(el);
         });
-
         grid.appendChild(addButton);
       }
 
+      // ============ Currency ============
+      document.getElementById('currencySelect').addEventListener('change', async function () {
+        try {
+          await SSJ.apiRequest('/users/me', 'PUT', { currency: this.value });
+        } catch (e) { console.error(e); }
+      });
+
+      // ============ Init ============
       document.addEventListener('DOMContentLoaded', () => {
-        // 检查登录状态
         const user = SSJ.getUserSession();
         if (!user) {
           window.location.href = '../index.html';
           return;
         }
-
-        // 显示用户信息
-        const userNameEl = document.getElementById('user-display-name');
-        if (userNameEl && user) {
-          userNameEl.textContent = user.nickname || user.username;
-        }
-
-        renderSettingsCategories();
-
         const toggle = document.getElementById('dark-mode-toggle');
-        if (toggle) {
-          toggle.checked = document.documentElement.classList.contains('dark');
-        }
+        if (toggle) toggle.checked = document.documentElement.classList.contains('dark');
+        loadUserProfile();
+        loadBudget();
+        loadAccounts();
+        loadSettingsCategories();
+
+        // Return from categories page: refresh categories
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden) loadSettingsCategories();
+        });
       });
     })();
   </script>

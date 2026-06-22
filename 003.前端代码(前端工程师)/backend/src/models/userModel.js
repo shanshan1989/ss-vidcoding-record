@@ -26,6 +26,36 @@ class UserModel {
   }
 
   /**
+   * 获取用户完整资料（含 signature, currency）
+   */
+  static async getProfile(id) {
+    const [rows] = await pool.execute(
+      'SELECT id, username, nickname, avatar_url, signature, currency, created_at, last_login_at FROM users WHERE id = ? AND is_active = 1',
+      [id]
+    );
+    return rows[0] || null;
+  }
+
+  /**
+   * 更新用户资料
+   */
+  static async updateProfile(id, { nickname, signature, avatar_url, currency }) {
+    const fields = [];
+    const values = [];
+    if (nickname !== undefined) { fields.push('nickname = ?'); values.push(nickname); }
+    if (signature !== undefined) { fields.push('signature = ?'); values.push(signature); }
+    if (avatar_url !== undefined) { fields.push('avatar_url = ?'); values.push(avatar_url); }
+    if (currency !== undefined) { fields.push('currency = ?'); values.push(currency); }
+    if (fields.length === 0) return false;
+    values.push(id);
+    await pool.execute(
+      `UPDATE users SET ${fields.join(', ')} WHERE id = ?`,
+      values
+    );
+    return true;
+  }
+
+  /**
    * 创建新用户
    */
   static async create({ username, password, nickname }) {

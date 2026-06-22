@@ -150,14 +150,46 @@
   </nav>
 
   <script src="../assets/js/shared.js"></script>
-  <script src="../assets/js/categories-data.js"></script>
   <script>
     (function () {
       'use strict';
 
-      let currentType = 'expense';
-      let selectedIcon = window.SSJCategories.TYPE_CONFIG.expense.defaultIcon;
+      const TYPE_CONFIG = {
+        expense: {
+          label: '支出',
+          defaultIcon: 'restaurant',
+          icons: ['restaurant','shopping_cart','local_gas_station','home','movie','medical_services','school','more_horiz','checkroom','flight','fitness_center','pets','child_care','store','local_cafe','celebration']
+        },
+        income: {
+          label: '收入',
+          defaultIcon: 'payments',
+          icons: ['payments','account_balance','savings','trending_up','work','attach_money','school','volunteer_activism','more_horiz']
+        }
+      };
 
+      let currentType = 'expense';
+      let selectedIcon = TYPE_CONFIG.expense.defaultIcon;
+      let categoriesData = { expense: [], income: [] };
+
+      // ============ Auth ============
+      function checkAuth() {
+        if (!SSJ.isLoggedIn()) window.location.href = '../index.html';
+      }
+
+      // ============ Load from API ============
+      async function loadCategories() {
+        try {
+          const [expRes, incRes] = await Promise.all([
+            SSJ.apiRequest('/categories?type=expense', 'GET'),
+            SSJ.apiRequest('/categories?type=income', 'GET')
+          ]);
+          categoriesData.expense = (expRes.data?.data || expRes.data || []).filter(c => !c.is_system || c.id.startsWith('cat_u_'));
+          categoriesData.income = (incRes.data?.data || incRes.data || []).filter(c => !c.is_system || c.id.startsWith('cat_u_'));
+          renderList();
+        } catch (e) { console.error(e); }
+      }
+
+      // ============ Icon ============
       function setSelectedIcon(iconName) {
         selectedIcon = iconName;
         document.getElementById('selectedIconSymbol').textContent = iconName;
@@ -168,11 +200,8 @@
 
       function renderIconPicker() {
         const grid = document.getElementById('iconGrid');
-        if (!grid) return;
-
-        const icons = window.SSJCategories.TYPE_CONFIG[currentType].icons;
+        const icons = TYPE_CONFIG[currentType].icons;
         grid.innerHTML = '';
-
         icons.forEach((iconName) => {
           const btn = document.createElement('button');
           btn.type = 'button';
@@ -185,37 +214,26 @@
           });
           grid.appendChild(btn);
         });
-
         setSelectedIcon(selectedIcon);
       }
 
+      // ============ Type Switching ============
       function setCurrentType(type) {
         currentType = type;
-        selectedIcon = window.SSJCategories.TYPE_CONFIG[type].defaultIcon;
-
-        // Update tabs
+        selectedIcon = TYPE_CONFIG[type].defaultIcon;
         const expenseTab = document.getElementById('tab-expense');
         const incomeTab = document.getElementById('tab-income');
-        const activeClasses = ['bg-primary-container', 'text-on-primary-container', 'font-bold'];
-        const inactiveClasses = ['text-secondary', 'font-medium', 'hover:bg-surface-variant'];
-
+        const active = ['bg-primary-container', 'text-on-primary-container', 'font-bold'];
+        const inactive = ['text-secondary', 'font-medium', 'hover:bg-surface-variant'];
         if (type === 'expense') {
-          expenseTab.classList.add(...activeClasses);
-          expenseTab.classList.remove(...inactiveClasses);
-          incomeTab.classList.remove(...activeClasses);
-          incomeTab.classList.add(...inactiveClasses);
+          expenseTab.classList.add(...active); expenseTab.classList.remove(...inactive);
+          incomeTab.classList.remove(...active); incomeTab.classList.add(...inactive);
         } else {
-          incomeTab.classList.add(...activeClasses);
-          incomeTab.classList.remove(...inactiveClasses);
-          expenseTab.classList.remove(...activeClasses);
-          expenseTab.classList.add(...inactiveClasses);
+          incomeTab.classList.add(...active); incomeTab.classList.remove(...inactive);
+          expenseTab.classList.remove(...active); expenseTab.classList.add(...inactive);
         }
-
-        // Update titles
-        document.getElementById('formTitle').textContent = '添加' + window.SSJCategories.TYPE_CONFIG[type].label + '分类';
-        document.getElementById('listTitle').textContent = window.SSJCategories.TYPE_CONFIG[type].label + '分类';
-
-        // Reset form
+        document.getElementById('formTitle').textContent = '添加' + TYPE_CONFIG[type].label + '分类';
+        document.getElementById('listTitle').textContent = TYPE_CONFIG[type].label + '分类';
         resetForm();
         renderIconPicker();
         renderList();
@@ -226,30 +244,23 @@
         document.getElementById('editingId').value = '';
         document.getElementById('saveCategoryBtn').textContent = '添加';
         document.getElementById('cancelEditBtn').classList.add('hidden');
-        selectedIcon = window.SSJCategories.TYPE_CONFIG[currentType].defaultIcon;
+        selectedIcon = TYPE_CONFIG[currentType].defaultIcon;
         setSelectedIcon(selectedIcon);
         document.getElementById('iconPanel').classList.add('hidden');
         document.querySelectorAll('.category-item').forEach((el) => el.classList.remove('editing'));
       }
 
+      // ============ Render List ============
       function renderList() {
-        const data = window.SSJCategories.loadCategories();
-        const list = data[currentType] || [];
+        const list = categoriesData[currentType] || [];
         const container = document.getElementById('categoryList');
         const countEl = document.getElementById('categoryCount');
-
         countEl.textContent = list.length + ' 个';
         container.innerHTML = '';
-
         if (list.length === 0) {
-          container.innerHTML = `
-            <div class="col-span-full text-center py-xl text-text-muted font-body-sm">
-              暂无分类，请添加
-            </div>
-          `;
+          container.innerHTML = '<div class="col-span-full text-center py-xl text-text-muted font-body-sm">暂无自定义分类</div>';
           return;
         }
-
         list.forEach((item) => {
           const el = document.createElement('div');
           el.className = 'category-item flex items-center justify-between p-md bg-surface-container-low rounded-xl border border-border-light hover:shadow-sm cursor-pointer';
@@ -259,36 +270,24 @@
               <span class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-lowest text-primary">
                 <span class="material-symbols-outlined text-[24px]">${item.icon}</span>
               </span>
-              <span class="font-body-md text-body-md text-on-surface font-medium">${escapeHtml(item.name)}</span>
+              <span class="font-body-md text-body-md text-on-surface font-medium">${item.name}</span>
+              ${item.is_system ? '<span class="text-xs text-text-muted ml-xs">系统</span>' : ''}
             </div>
-            <button type="button" class="delete-btn w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors" data-id="${item.id}" title="删除">
+            ${!item.is_system ? `<button type="button" class="delete-btn w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors" data-id="${item.id}" title="删除">
               <span class="material-symbols-outlined text-[20px]">delete</span>
-            </button>
-          `;
-
-          // Click on card to edit
-          el.addEventListener('click', (e) => {
-            if (e.target.closest('.delete-btn')) return;
-            startEdit(item);
-          });
-
-          // Delete button
-          const deleteBtn = el.querySelector('.delete-btn');
-          deleteBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (confirm('确定要删除分类「' + item.name + '」吗？')) {
-              deleteCategory(item.id);
-            }
-          });
-
+            </button>` : ''}`;
+          if (!item.is_system) {
+            el.addEventListener('click', (e) => {
+              if (e.target.closest('.delete-btn')) return;
+              startEdit(item);
+            });
+            el.querySelector('.delete-btn').addEventListener('click', (e) => {
+              e.stopPropagation();
+              if (confirm('确定要删除分类「' + item.name + '」吗？')) deleteCategory(item.id);
+            });
+          }
           container.appendChild(el);
         });
-      }
-
-      function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
       }
 
       function startEdit(item) {
@@ -297,85 +296,48 @@
         setSelectedIcon(item.icon);
         document.getElementById('saveCategoryBtn').textContent = '保存';
         document.getElementById('cancelEditBtn').classList.remove('hidden');
-        document.getElementById('formTitle').textContent = '编辑' + window.SSJCategories.TYPE_CONFIG[currentType].label + '分类';
-
-        // Highlight editing item
-        document.querySelectorAll('.category-item').forEach((el) => {
-          el.classList.toggle('editing', el.dataset.id === item.id);
-        });
+        document.getElementById('formTitle').textContent = '编辑' + TYPE_CONFIG[currentType].label + '分类';
+        document.querySelectorAll('.category-item').forEach((el) => el.classList.toggle('editing', el.dataset.id === item.id));
       }
 
-      function saveCategory() {
-        const nameInput = document.getElementById('categoryName');
-        const name = nameInput.value.trim();
+      // ============ Save ============
+      async function saveCategory() {
+        const name = document.getElementById('categoryName').value.trim();
         const editingId = document.getElementById('editingId').value;
-
-        if (!name) {
-          alert('请输入分类名称');
-          return;
-        }
-
-        const data = window.SSJCategories.loadCategories();
-        const list = data[currentType];
-
-        if (editingId) {
-          // Update existing
-          const index = list.findIndex((item) => item.id === editingId);
-          if (index >= 0) {
-            list[index] = { ...list[index], name, icon: selectedIcon };
+        if (!name) { alert('请输入分类名称'); return; }
+        try {
+          if (editingId) {
+            await SSJ.apiRequest(`/categories/${editingId}`, 'PUT', { name, icon: selectedIcon });
+          } else {
+            await SSJ.apiRequest('/categories', 'POST', { type: currentType, name, icon: selectedIcon });
           }
-        } else {
-          // Add new
-          // Check duplicate name
-          if (list.some((item) => item.name === name)) {
-            alert('该分类已存在');
-            return;
-          }
-          list.push({ id: window.SSJCategories.generateId(currentType), name, icon: selectedIcon });
-        }
-
-        window.SSJCategories.saveCategories(data);
-        resetForm();
-        renderList();
+          resetForm();
+          await loadCategories();
+        } catch (e) { alert('保存失败'); console.error(e); }
       }
 
-      function deleteCategory(id) {
-        const data = window.SSJCategories.loadCategories();
-        data[currentType] = data[currentType].filter((item) => item.id !== id);
-        window.SSJCategories.saveCategories(data);
-        resetForm();
-        renderList();
+      async function deleteCategory(id) {
+        try {
+          await SSJ.apiRequest(`/categories/${id}`, 'DELETE');
+          resetForm();
+          await loadCategories();
+        } catch (e) { alert('删除失败'); console.error(e); }
       }
 
-      function init() {
-        // Tab switching
+      // ============ Init ============
+      document.addEventListener('DOMContentLoaded', () => {
+        checkAuth();
         document.getElementById('tab-expense').addEventListener('click', () => setCurrentType('expense'));
         document.getElementById('tab-income').addEventListener('click', () => setCurrentType('income'));
-
-        // Icon picker toggle
-        const iconBtn = document.getElementById('selectedIconBtn');
-        const iconPanel = document.getElementById('iconPanel');
-        iconBtn.addEventListener('click', () => {
-          iconPanel.classList.toggle('hidden');
+        document.getElementById('selectedIconBtn').addEventListener('click', () => {
+          document.getElementById('iconPanel').classList.toggle('hidden');
         });
-
-        // Save / Add
         document.getElementById('saveCategoryBtn').addEventListener('click', saveCategory);
-
-        // Cancel edit
-        document.getElementById('cancelEditBtn').addEventListener('click', () => {
-          resetForm();
-        });
-
-        // Enter key to save
-        document.getElementById('categoryName').addEventListener('keypress', (e) => {
-          if (e.key === 'Enter') saveCategory();
-        });
-
+        document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
+        document.getElementById('categoryName').addEventListener('keypress', (e) => { if (e.key === 'Enter') saveCategory(); });
         setCurrentType('expense');
-      }
-
-      document.addEventListener('DOMContentLoaded', init);
+        loadCategories();
+      });
     })();
   </script>
 </body>
