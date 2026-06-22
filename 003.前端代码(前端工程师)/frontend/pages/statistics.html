@@ -21,7 +21,7 @@
     <div class="hidden md:flex gap-lg items-center">
       <a href="./home.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">首页</a>
       <a href="./transactions.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">账单</a>
-      <a href="./statistics.html" class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary dark:border-primary-fixed pb-1 font-body-md text-body-md">统计</a>
+      <a href="./statistics.html" class="text-primary dark:text-primary-fixed font-bold bg-primary-container dark:bg-primary-fixed dark:text-primary-container rounded-lg px-md py-sm font-body-md text-body-md">统计</a>
       <a href="./settings.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">设置</a>
     </div>
     <div class="flex items-center gap-md">
@@ -116,14 +116,14 @@
     <!-- Main Content Area: Charts Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
       <!-- Section 2: Large Pie Chart Spending Categories -->
-      <section class="lg:col-span-8 bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-border-light animate-fade-in" style="animation-delay: 0.2s;">
+      <section class="lg:col-span-8 bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-border-light overflow-hidden" style="min-height: 320px;">
         <div class="flex justify-between items-center mb-lg">
           <h2 class="font-headline-lg text-headline-lg text-on-surface">支出构成</h2>
         </div>
 
         <div class="flex flex-col md:flex-row items-center gap-xl">
           <!-- ECharts Pie Chart -->
-          <div id="pieChart" class="relative w-64 h-64"></div>
+          <div id="pieChart" class="relative w-64 h-64 flex-shrink-0"></div>
 
           <!-- Legend -->
           <div class="flex-1 w-full space-y-md" id="pieLegend">
@@ -387,19 +387,23 @@
         pieChartInstance = echarts.init(document.getElementById('pieChart'));
       }
       if (!categories || categories.length === 0) {
-        pieChartInstance.clear();
         pieChartInstance.setOption({
           title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { fontSize: 14, color: '#9ca3af' } },
-          series: [{ data: [] }]
-        });
+          series: [{ data: [] }],
+          graphic: []
+        }, false);
+        pieChartInstance.resize();
         return;
       }
+      const hasData = categories && categories.length > 0;
+      const seriesData = hasData ? categories.map(c => ({
+        value: c.amount,
+        name: c.category_name,
+        itemStyle: { color: c.category_color }
+      })) : [];
       pieChartInstance.setOption({
         title: { show: false },
-        tooltip: {
-          trigger: 'item',
-          formatter: '{b}: {c} ({d}%)'
-        },
+        tooltip: hasData ? { trigger: 'item', formatter: '{b}: {c} ({d}%)' } : { show: false },
         series: [{
           type: 'pie',
           radius: ['45%', '70%'],
@@ -408,13 +412,9 @@
           itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
           label: { show: false },
           emphasis: { label: { show: false } },
-          data: categories.map(c => ({
-            value: c.amount,
-            name: c.category_name,
-            itemStyle: { color: c.category_color }
-          }))
+          data: seriesData
         }],
-        graphic: [{
+        graphic: hasData ? [{
           type: 'text',
           left: 'center',
           top: 'center',
@@ -425,9 +425,10 @@
             fontSize: 12,
             fontFamily: 'Inter, sans-serif'
           }
-        }]
+        }] : []
       });
     }
+
 
     function renderLineChart(months) {
       if (!lineChartInstance) {

@@ -40,28 +40,29 @@ myproduct/
 ├── 003.前端代码(前端工程师)/
 │   ├── frontend/                  # 前端页面（Tailwind CSS）
 │   │   ├── index.html             # 登录页
-│   │   ├── pages/                 # 业务页面
+│   │   ├── pages/                # 业务页面
 │   │   │   ├── home.html          # 首页（记账）
 │   │   │   ├── transactions.html   # 账单明细
 │   │   │   ├── statistics.html     # 统计报表
 │   │   │   ├── settings.html      # 设置
+│   │   │   ├── edit-profile.html  # 编辑个人资料
 │   │   │   ├── categories.html    # 分类管理
-│   │   │   └── register.html       # 注册页
+│   │   │   └── register.html      # 注册页
 │   │   └── assets/js/
 │   │       ├── auth.js            # 登录注册逻辑
 │   │       ├── shared.js          # 共享工具函数（SSJ 对象）
 │   │       └── categories-data.js  # 分类数据
 │   └── backend/                   # 后端 API（Node.js + Express）
 │       └── src/
-│           ├── app.js             # Express 主入口（路由注册）
+│           ├── app.js             # Express 主入口
 │           ├── config/db.js       # MySQL 连接池
-│           ├── middleware/auth.js  # 鉴权中间件（Bearer token）
+│           ├── middleware/auth.js # 鉴权中间件（Bearer userId）
 │           ├── models/            # 数据模型
 │           ├── controllers/       # 业务控制器
-│           └── routes/           # API 路由
-└── 004.数据库管理(数据库管理员)/   # 数据库
-    ├── init_database.sql          # 初始化脚本
-    └── 随手记账数据库设计.md       # 设计文档
+│           └── routes/          # API 路由
+└── 004.数据库管理(数据库管理员)/  # 数据库
+    ├── init_database.sql
+    └── 随手记账数据库设计.md
 ```
 
 ## 技术栈
@@ -70,7 +71,7 @@ myproduct/
 - HTML5 + CSS3 + JavaScript（ES6+）
 - Tailwind CSS（CDN）
 - Material Symbols Outlined 图标
-- ECharts 5（CDN，用于统计页面图表）
+- ECharts 5（CDN，统计页面图表）
 
 ### 后端
 - Node.js + Express
@@ -78,8 +79,7 @@ myproduct/
 - bcryptjs（密码加密）
 
 ### 数据库
-- MySQL 9.7
-- 字符集：utf8mb4
+- MySQL 9.7，字符集 utf8mb4
 
 ## API 接口
 
@@ -88,24 +88,37 @@ myproduct/
 | `/api/auth/register` | POST | 用户注册 | 否 |
 | `/api/auth/login` | POST | 用户登录 | 否 |
 | `/api/health` | GET | 健康检查 | 否 |
+| `/api/users/me` | GET | 获取当前用户资料 | 是 |
+| `/api/users/me` | PUT | 更新昵称/头像/签名/货币单位 | 是 |
 | `/api/home/summary` | GET | 首页汇总 | 是 |
 | `/api/home/budget` | GET | 首页预算 | 是 |
-| `/api/categories` | GET | 分类列表 | 是 |
+| `/api/categories` | GET | 分类列表（`?type=expense|income`） | 是 |
+| `/api/categories` | POST | 创建分类 | 是 |
+| `/api/categories/:id` | PUT | 更新分类 | 是 |
+| `/api/categories/:id` | DELETE | 删除分类 | 是 |
 | `/api/transactions/recent` | GET | 最近交易 | 是 |
 | `/api/transactions/summary` | GET | 月度汇总 | 是 |
-| `/api/statistics/yearly-summary` | GET | 收支汇总（支持 `?year=&month=`） | 是 |
-| `/api/statistics/expense-by-category` | GET | 按分类支出（支持 `?year=&month=`） | 是 |
-| `/api/statistics/top-expenses` | GET | 支出 Top N（支持 `?year=&month=&limit=`） | 是 |
-| `/api/statistics/monthly-trend` | GET | 每月收支趋势（支持 `?year=`） | 是 |
+| `/api/accounts` | GET | 账户列表 | 是 |
+| `/api/accounts` | POST | 创建账户 | 是 |
+| `/api/accounts/:id` | PUT | 更新账户 | 是 |
+| `/api/accounts/:id` | DELETE | 删除账户 | 是 |
+| `/api/budgets` | GET | 预算（`?year_month=YYYY-MM`） | 是 |
+| `/api/budgets` | POST | 创建/更新月度总预算 | 是 |
+| `/api/budgets/:id` | PUT | 更新预算 | 是 |
+| `/api/budgets/:id` | DELETE | 删除预算 | 是 |
+| `/api/statistics/yearly-summary` | GET | 收支汇总（`?year=&month=`） | 是 |
+| `/api/statistics/expense-by-category` | GET | 按分类支出（`?year=&month=`） | 是 |
+| `/api/statistics/top-expenses` | GET | 支出 Top N（`?year=&month=&limit=`） | 是 |
+| `/api/statistics/monthly-trend` | GET | 每月收支趋势（`?year=`） | 是 |
 
-> **注意**: 后端所有私有 API 都需要 `Authorization: Bearer {userId}` 请求头。
+> **认证说明**: 私有 API 需 `Authorization: Bearer {userId}` 请求头。
 
 ## 架构说明
 
 ### 前端认证流程
-1. 用户在 `index.html` 登录成功后，`auth.js` 将用户信息存入 `localStorage.ssj_user_session`
+1. 登录成功后将用户信息存入 `localStorage.ssj_user_session`
 2. 各页面通过 `SSJ.isLoggedIn()` 检查登录状态，未登录跳转 `../index.html`
-3. `SSJ.apiRequest(endpoint, method, body)` 自动附加 `Authorization` 头
+3. `SSJ.apiRequest(endpoint, method, body)` 自动附加 Authorization 头
 
 ### 后端分层
 - **Routes**: 定义 API 路由，统一使用 `authenticate` 中间件
@@ -113,20 +126,18 @@ myproduct/
 - **Models**: 数据库操作，使用 `mysql2` prepared statements
 
 ### API 响应格式
-后端 Controller 返回统一格式：
-```json
-{ "success": true, "data": { ...实际数据 } }
-```
-前端 `SSJ.apiRequest` 会将其包装为 `{ success: response.ok, data: 解析后内容, status }`，因此在 statistics 等页面需要用 `res.data.data` 或 `res.data` 兼容取值。
+后端返回 `{ success: true, data: {...} }`，`SSJ.apiRequest` 包装为 `{ success: response.ok, data: 解析后内容, status }`，取值时注意兼容 `res.data.data` 或 `res.data`。
 
-### 数据库表结构
-- `users` - 用户表
-- `categories` - 分类表（系统默认 + 用户自定义，`type`: expense/income）
-- `accounts` - 账户表
-- `transactions` - 账单表（含 `type`: expense/income/transfer，`transaction_date`）
-- `budgets` - 预算表
-- `reminders` - 提醒表
-- `backups` - 备份记录表
+### 数据库表
+- `users` — 含 nickname、avatar_url（MEDIUMTEXT）、signature、currency 字段
+- `categories` — 系统内置 + 用户自定义，`is_system=1` 为系统内置
+- `accounts` — 账户表，`type`: cash/electronic/bank/credit/other
+- `transactions` — 账单表，`type`: expense/income/transfer
+- `budgets` — 月度预算，`year_month` 格式 `YYYY-MM`
+- `reminders`、`backups`
+
+### 重要配置
+- Express JSON 请求体限制：`10mb`（支持头像 Base64 上传）
 
 ## 开发注意事项
 
@@ -134,7 +145,7 @@ myproduct/
 1. 在 `routes/` 创建路由文件，引入 `authenticate` 中间件
 2. 在 `controllers/` 创建控制器
 3. 在 `models/` 创建数据模型
-4. 在 `app.js` 中 `require` 路由文件并 `app.use` 注册
+4. 在 `app.js` 中 `require` 并 `app.use` 注册
 
 ### 前端页面权限控制
 ```javascript
@@ -144,7 +155,7 @@ if (!SSJ.isLoggedIn()) {
 ```
 
 ### 环境变量
-后端 `.env` 文件（不在 git 中）：
+后端 `.env`（不在 git）：
 ```
 DB_HOST=localhost
 DB_PORT=3306
@@ -156,5 +167,5 @@ PORT=3000
 
 ## 相关文件
 
-- [001.产品PRD/财务记账产品需求文档.md](001.产品PRD/财务记账产品需求文档.md) - 产品需求文档
-- [004.数据库管理(数据库管理员)/随手记账数据库设计.md](004.数据库管理(数据库管理员)/随手记账数据库设计.md) - 数据库设计文档
+- [001.产品PRD/财务记账产品需求文档.md](001.产品PRD/财务记账产品需求文档.md)
+- [004.数据库管理(数据库管理员)/随手记账数据库设计.md](004.数据库管理(数据库管理员)/随手记账数据库设计.md)

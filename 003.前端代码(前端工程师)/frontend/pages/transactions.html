@@ -18,22 +18,16 @@
 </head>
 <body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col">
   <!-- Top Navigation Bar -->
-  <header class="flex justify-between items-center w-full px-margin-desktop h-16 sticky top-0 z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-sm transition-all duration-150">
-    <div class="flex items-center gap-md">
-      <h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">随手记账</h1>
-      <nav class="hidden md:flex gap-lg ml-xl">
-        <a href="./home.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">首页</a>
-        <a href="./transactions.html" class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary dark:border-primary-fixed pb-1 font-body-md text-body-md">账单</a>
-        <a href="./statistics.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">统计</a>
-        <a href="./settings.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">设置</a>
-      </nav>
-    </div>
+  <header class="flex justify-between items-center w-full px-margin-desktop h-16 sticky top-0 z-50 bg-surface-container-lowest dark:bg-inverse-surface shadow-sm dark:border-b dark:border-outline-variant">
+    <div class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">随手记账</div>
+    <nav class="hidden md:flex gap-lg items-center">
+      <a href="./home.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">首页</a>
+      <a href="./transactions.html" class="text-primary dark:text-primary-fixed font-bold bg-primary-container dark:bg-primary-fixed dark:text-primary-container rounded-lg px-md py-sm font-body-md text-body-md">账单</a>
+      <a href="./statistics.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">统计</a>
+      <a href="./settings.html" class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed transition-colors font-body-md text-body-md">设置</a>
+    </nav>
 
     <div class="flex items-center gap-md">
-      <div class="relative hidden sm:block">
-        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-        <input type="text" placeholder="搜索交易流水..." class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full focus:ring-2 focus:ring-primary/20 w-64 text-body-sm font-body-sm">
-      </div>
       <a href="./settings.html" class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container flex items-center justify-center bg-surface-container-highest">
         <span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
       </a>
