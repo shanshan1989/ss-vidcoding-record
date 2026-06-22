@@ -113,6 +113,8 @@ myproduct/
 
 > **认证说明**: 私有 API 需 `Authorization: Bearer {userId}` 请求头。
 
+> **注意**: `budgets` 表的 `year_month` 是 MySQL 保留字，SQL 中需用 `` `year_month` `` 反引号包裹。
+
 ## 架构说明
 
 ### 前端认证流程

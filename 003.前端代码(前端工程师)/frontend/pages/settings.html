@@ -310,25 +310,34 @@
 
       function renderAccounts() {
         const grid = document.getElementById('accountsGrid');
+        grid.innerHTML = '';
+
+        const icons = { electronic: 'account_balance_wallet', cash: 'payments', bank: 'account_balance', credit: 'credit_card', other: 'more_horiz' };
+        const colors = { electronic: '#07C160', cash: '#1976D2', bank: '#9C27B0', credit: '#F57C00', other: '#607D8B' };
+
         if (currentAccounts.length === 0) {
-          grid.innerHTML = '<div class="col-span-3 text-text-muted text-body-sm text-center py-lg">暂无账户，请点击下方添加</div>';
+          // 空状态时显示提示和添加按钮
+          const emptyMsg = document.createElement('div');
+          emptyMsg.className = 'col-span-3 text-text-muted text-body-sm text-center py-lg';
+          emptyMsg.textContent = '暂无账户';
+          grid.appendChild(emptyMsg);
+        } else {
+          currentAccounts.forEach(acc => {
+            const el = document.createElement('button');
+            el.type = 'button';
+            el.className = 'flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light';
+            el.innerHTML = `
+              <span class="material-symbols-outlined text-[32px]" style="color:${colors[acc.type] || '#607D8B'}">${icons[acc.type] || 'more_horiz'}</span>
+              <div>
+                <div class="font-label-md text-label-md">${acc.name}</div>
+                <div class="text-body-sm font-body-sm text-text-muted">¥ ${Number(acc.current_balance).toLocaleString()}</div>
+              </div>`;
+            el.addEventListener('click', () => openAccountModal(acc));
+            grid.appendChild(el);
+          });
         }
-        currentAccounts.forEach(acc => {
-          const icons = { electronic: 'account_balance_wallet', cash: 'payments', bank: 'account_balance', credit: 'credit_card', other: 'more_horiz' };
-          const colors = { electronic: '#07C160', cash: '#1976D2', bank: '#9C27B0', credit: '#F57C00', other: '#607D8B' };
-          const el = document.createElement('button');
-          el.type = 'button';
-          el.className = 'flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light';
-          el.innerHTML = `
-            <span class="material-symbols-outlined text-[32px]" style="color:${colors[acc.type] || '#607D8B'}">${icons[acc.type] || 'more_horiz'}</span>
-            <div>
-              <div class="font-label-md text-label-md">${acc.name}</div>
-              <div class="text-body-sm font-body-sm text-text-muted">¥ ${Number(acc.current_balance).toLocaleString()}</div>
-            </div>`;
-          el.addEventListener('click', () => openAccountModal(acc));
-          grid.appendChild(el);
-        });
-        // Add button
+
+        // 添加按钮始终显示
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.className = 'flex flex-col items-center justify-center gap-sm p-lg bg-surface-container-low rounded-xl hover:bg-surface-container-high transition-colors text-center group border border-border-light border-dashed';

@@ -232,6 +232,8 @@
         });
 
         if (result.success && result.data.success) {
+          // 标记新用户，注册成功后首次登录时显示引导提示
+          localStorage.setItem('ssj_new_user', 'true');
           showToast('注册成功！即将跳转到登录页面...');
           setTimeout(() => {
             window.location.href = '../index.html';

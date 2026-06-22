@@ -301,6 +301,28 @@
         });
       }
 
+      function showNewUserGuide() {
+        const isNewUser = localStorage.getItem('ssj_new_user');
+        if (!isNewUser) return;
+
+        // 清除标志，只提示一次
+        localStorage.removeItem('ssj_new_user');
+
+        // 创建提示框
+        const guideBox = document.createElement('div');
+        guideBox.id = 'newUserGuide';
+        guideBox.className = 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[200] bg-surface-container-lowest rounded-2xl p-xl shadow-2xl max-w-sm w-[90vw] text-center';
+        guideBox.innerHTML = `
+          <div class="w-16 h-16 bg-primary-container rounded-full flex items-center justify-center mx-auto mb-lg">
+            <span class="material-symbols-outlined text-[32px] text-on-primary-container">account_balance_wallet</span>
+          </div>
+          <h3 class="font-headline-lg text-headline-lg text-on-surface mb-md">欢迎使用随手记账！</h3>
+          <p class="font-body-md text-body-md text-on-surface-variant mb-xl">首次使用，请先进入<span class="font-bold text-primary">"设置 → 支付账户管理"</span>添加您的账户。</p>
+          <button onclick="document.getElementById('newUserGuide').remove()" class="bg-primary text-on-primary px-xl py-md rounded-xl font-label-md text-label-md hover:opacity-90 transition-opacity">知道了</button>
+        `;
+        document.body.appendChild(guideBox);
+      }
+
       function showToast(message, isError = false) {
         const existingToast = document.querySelector('.toast-message');
         if (existingToast) existingToast.remove();
@@ -406,6 +428,7 @@
         }
         loadHomeSummary();
         loadHomeBudget();
+        showNewUserGuide();
         initTypeToggle();
         renderHomeCategories('expense');
         initConfirmButton();
