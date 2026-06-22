@@ -11,6 +11,12 @@
 
     let currentAmount = "0.00";
 
+    // 切换收支类型时重置金额
+    document.addEventListener("ssj-type-change", () => {
+      currentAmount = "0.00";
+      display.value = currentAmount;
+    });
+
     document.querySelectorAll(".keypad-button").forEach((btn) => {
       btn.addEventListener("click", () => {
         const value = btn.innerText.trim();

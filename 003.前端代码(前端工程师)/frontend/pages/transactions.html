@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>账单明细 - 随手记账</title>
   <script src="../assets/js/tailwind-config.js"></script>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -52,6 +55,11 @@
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
         </div>
+        <div class="flex items-center gap-sm mt-sm">
+          <button type="button" data-type="all" class="type-filter-btn px-md py-xs rounded-full text-label-md font-medium bg-primary-container text-on-primary-container transition-all">全部</button>
+          <button type="button" data-type="expense" class="type-filter-btn px-md py-xs rounded-full text-label-md font-medium text-secondary hover:bg-surface-variant transition-all">支出</button>
+          <button type="button" data-type="income" class="type-filter-btn px-md py-xs rounded-full text-label-md font-medium text-secondary hover:bg-surface-variant transition-all">收入</button>
+        </div>
       </div>
 
       <!-- Summary Cards -->
@@ -61,175 +69,15 @@
           <span class="text-alert-red font-number-xl text-number-xl">-¥3,280.00</span>
         </div>
         <div class="bg-surface-container-lowest p-md rounded-xl shadow-sm border border-border-light flex flex-col justify-center min-w-[160px]">
-          <span class="text-secondary font-label-sm text-label-sm">本月结余</span>
+          <span class="text-secondary font-label-sm text-label-sm">本月收入</span>
           <span class="text-primary font-number-xl text-number-xl">+¥4,290.00</span>
         </div>
       </div>
     </div>
 
     <!-- Transactions Body -->
-    <div class="space-y-xl">
-      <!-- Group: Today -->
-      <section>
-        <div class="flex items-center gap-md mb-md">
-          <h3 class="font-headline-lg text-headline-lg text-on-surface">今天</h3>
-          <span class="text-secondary font-body-sm text-body-sm">10月24日, 星期四</span>
-          <div class="flex-grow border-b border-border-light"></div>
-        </div>
-
-        <div class="space-y-sm">
-          <!-- Item 1 -->
-          <div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
-            <div class="flex items-center gap-lg">
-              <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary-container text-on-primary-container">
-                <span class="material-symbols-outlined text-[28px]">restaurant</span>
-              </div>
-              <div>
-                <h4 class="font-body-lg text-body-lg text-on-surface font-semibold">星巴克午餐</h4>
-                <div class="flex items-center gap-md mt-0.5">
-                  <span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
-                    <span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
-                    支付宝
-                  </span>
-                  <span class="text-secondary font-body-sm text-body-sm italic">每日咖啡和三明治</span>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-xl">
-              <span class="font-number-md text-number-md text-alert-red">-¥58.00</span>
-              <div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
-                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
-                  <span class="material-symbols-outlined text-[20px]">edit</span>
-                </button>
-                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
-                  <span class="material-symbols-outlined text-[20px]">delete</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 2 -->
-          <div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
-            <div class="flex items-center gap-lg">
-              <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-secondary-container text-on-secondary-container">
-                <span class="material-symbols-outlined text-[28px]">directions_car</span>
-              </div>
-              <div>
-                <h4 class="font-body-lg text-body-lg text-on-surface font-semibold">滴滴打车</h4>
-                <div class="flex items-center gap-md mt-0.5">
-                  <span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
-                    <span class="material-symbols-outlined text-[14px]">payments</span>
-                    现金
-                  </span>
-                  <span class="text-secondary font-body-sm text-body-sm italic">去办公室通勤</span>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-xl">
-              <span class="font-number-md text-number-md text-alert-red">-¥70.50</span>
-              <div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
-                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
-                  <span class="material-symbols-outlined text-[20px]">edit</span>
-                </button>
-                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
-                  <span class="material-symbols-outlined text-[20px]">delete</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Group: Yesterday -->
-      <section>
-        <div class="flex items-center gap-md mb-md">
-          <h3 class="font-headline-lg text-headline-lg text-on-surface">昨天</h3>
-          <span class="text-secondary font-body-sm text-body-sm">10月23日, 星期三</span>
-          <div class="flex-grow border-b border-border-light"></div>
-        </div>
-
-        <div class="space-y-sm">
-          <!-- Item 3: Income -->
-          <div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
-            <div class="flex items-center gap-lg">
-              <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-tertiary-fixed text-on-tertiary-fixed">
-                <span class="material-symbols-outlined text-[28px]">payments</span>
-              </div>
-              <div>
-                <h4 class="font-body-lg text-body-lg text-on-surface font-semibold">自由职业劳务费</h4>
-                <div class="flex items-center gap-md mt-0.5">
-                  <span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
-                    <span class="material-symbols-outlined text-[14px]">account_balance</span>
-                    银行转账
-                  </span>
-                  <span class="text-secondary font-body-sm text-body-sm italic">网页设计项目结项收入</span>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-xl">
-              <span class="font-number-md text-number-md text-primary">+¥5,500.00</span>
-              <div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
-                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
-                  <span class="material-symbols-outlined text-[20px]">edit</span>
-                </button>
-                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
-                  <span class="material-symbols-outlined text-[20px]">delete</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Item 4 -->
-          <div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
-            <div class="flex items-center gap-lg">
-              <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-outline-variant text-on-surface-variant">
-                <span class="material-symbols-outlined text-[28px]">shopping_bag</span>
-              </div>
-              <div>
-                <h4 class="font-body-lg text-body-lg text-on-surface font-semibold">优衣库</h4>
-                <div class="flex items-center gap-md mt-0.5">
-                  <span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
-                    <span class="material-symbols-outlined text-[14px]">account_balance_wallet</span>
-                    支付宝
-                  </span>
-                  <span class="text-secondary font-body-sm text-body-sm italic">新款冬装大衣</span>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-xl">
-              <span class="font-number-md text-number-md text-alert-red">-¥699.00</span>
-              <div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
-                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
-                  <span class="material-symbols-outlined text-[20px]">edit</span>
-                </button>
-                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
-                  <span class="material-symbols-outlined text-[20px]">delete</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-
-    <!-- Insights -->
-    <div class="mt-2xl grid grid-cols-1 md:grid-cols-3 gap-lg">
-      <div class="md:col-span-2 relative overflow-hidden rounded-2xl bg-primary-container p-xl text-on-primary-container min-h-[200px] flex flex-col justify-end">
-        <div class="relative z-10">
-          <h3 class="font-display-md text-display-md mb-sm">有意识的储蓄</h3>
-          <p class="font-body-lg text-body-lg max-w-md opacity-90">你本月有望比九月份多存15%的钱。请继续保持！</p>
-        </div>
-      </div>
-      <div class="bg-surface-container-highest p-xl rounded-2xl border border-border-light flex flex-col justify-between">
-        <span class="material-symbols-outlined text-[48px] text-primary">analytics</span>
-        <div>
-          <h4 class="font-headline-lg text-headline-lg mb-xs">支出结构</h4>
-          <p class="text-secondary font-body-sm text-body-sm">外出就餐占本周支出的42%。</p>
-        </div>
-        <div class="mt-md w-full bg-surface-container-low rounded-full h-2">
-          <div class="bg-primary h-full rounded-full w-[42%]"></div>
-        </div>
-      </div>
+    <div id="transactionsContainer" class="space-y-xl">
+      <!-- Groups will be rendered dynamically -->
     </div>
   </main>
 
@@ -263,9 +111,217 @@
 
   <script src="../assets/js/shared.js"></script>
   <script>
-    if (!SSJ.isLoggedIn()) {
-      window.location.href = '../index.html';
-    }
+    (function () {
+      'use strict';
+
+      if (!SSJ.isLoggedIn()) {
+        window.location.href = '../index.html';
+        return;
+      }
+
+      const now = new Date();
+      let currentYear = now.getFullYear();
+      let currentMonth = now.getMonth() + 1;
+      let currentType = 'all';
+
+      function formatMoneyDisplay(value) {
+        const num = Number(value);
+        if (isNaN(num)) return '¥0.00';
+        const sign = num >= 0 ? '+' : '-';
+        return sign + '¥' + Math.abs(num).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function formatMoneySimple(value) {
+        const num = Number(value);
+        if (isNaN(num)) return '¥0.00';
+        return '¥' + num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function updatePeriodLabel() {
+        const label = document.querySelector('h2.font-display-md.text-display-md.text-on-surface');
+        if (label) label.textContent = `${currentYear}年 ${currentMonth}月`;
+      }
+
+      async function loadSummary() {
+        const result = await SSJ.apiRequest(`/transactions/summary?year=${currentYear}&month=${currentMonth}`, 'GET');
+        if (!result.success || !result.data.success) return;
+
+        const data = result.data.data;
+        const expenseEl = document.querySelector('.grid.grid-cols-2.gap-md .text-alert-red.font-number-xl');
+        const balanceEl = document.querySelector('.grid.grid-cols-2.gap-md .text-primary.font-number-xl');
+
+        if (expenseEl) expenseEl.textContent = formatMoneyDisplay(-data.total_expense);
+        if (balanceEl) balanceEl.textContent = formatMoneyDisplay(data.total_income);
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function renderTransactionItem(item) {
+        const isExpense = item.type === 'expense';
+        const amountClass = isExpense ? 'text-alert-red' : 'text-primary';
+        const sign = isExpense ? '-' : '+';
+        const icon = item.category.icon || 'payments';
+        const accountIcon = item.account.icon || 'account_balance_wallet';
+
+        return `
+          <div class="transaction-card group flex items-center justify-between p-lg bg-surface-container-lowest rounded-xl border border-border-light shadow-sm hover:shadow-md transition-all">
+            <div class="flex items-center gap-lg">
+              <div class="w-12 h-12 flex items-center justify-center rounded-xl bg-primary-container text-on-primary-container">
+                <span class="material-symbols-outlined text-[28px]">${escapeHtml(icon)}</span>
+              </div>
+              <div>
+                <h4 class="font-body-lg text-body-lg text-on-surface font-semibold">${escapeHtml(item.category.name || '未分类')}</h4>
+                <div class="flex items-center gap-md mt-0.5">
+                  <span class="flex items-center gap-xs font-label-sm text-label-sm text-secondary">
+                    <span class="material-symbols-outlined text-[14px]">${escapeHtml(accountIcon)}</span>
+                    ${escapeHtml(item.account.name || '未知账户')}
+                  </span>
+                  ${item.note ? `<span class="text-secondary font-body-sm text-body-sm italic">${escapeHtml(item.note)}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-xl">
+              <span class="font-number-md text-number-md ${amountClass}">${sign}${formatMoneySimple(item.amount)}</span>
+              <div class="action-buttons opacity-0 translate-x-2 transition-all flex gap-sm">
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-high text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">edit</span>
+                </button>
+                <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-error-container hover:text-error text-secondary transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      async function loadTransactions() {
+        const container = document.getElementById('transactionsContainer');
+        if (!container) return;
+
+        container.innerHTML = '<p class="text-center text-secondary py-xl">加载中...</p>';
+
+        try {
+          const result = await SSJ.apiRequest(`/transactions/list?year=${currentYear}&month=${currentMonth}&type=${currentType}`, 'GET');
+          console.log('账单接口返回:', result);
+
+          if (!result.success) {
+            container.innerHTML = `<div class="text-center text-secondary py-xl">
+              <p>加载账单失败</p>
+              <p class="text-body-sm mt-sm">${escapeHtml(result.data.message || '网络错误')}</p>
+            </div>`;
+            return;
+          }
+
+          if (!result.data.success) {
+            container.innerHTML = `<div class="text-center text-secondary py-xl">
+              <p>加载账单失败</p>
+              <p class="text-body-sm mt-sm">${escapeHtml(result.data.message || '未知错误')}</p>
+            </div>`;
+            return;
+          }
+
+          const groups = result.data.data || [];
+          if (groups.length === 0) {
+            container.innerHTML = '<p class="text-center text-secondary py-xl">本月没有记录</p>';
+            return;
+          }
+
+          container.innerHTML = groups.map((group) => `
+            <section>
+              <div class="flex items-center gap-md mb-md">
+                <h3 class="font-headline-lg text-headline-lg text-on-surface">${escapeHtml(group.label)}</h3>
+                <span class="text-secondary font-body-sm text-body-sm">${escapeHtml(group.date_display)}</span>
+                <div class="flex-grow border-b border-border-light"></div>
+              </div>
+              <div class="space-y-sm">
+                ${group.items.map(renderTransactionItem).join('')}
+              </div>
+            </section>
+          `).join('');
+        } catch (error) {
+          console.error('加载账单异常:', error);
+          container.innerHTML = '<p class="text-center text-secondary py-xl">加载账单时发生错误</p>';
+        }
+      }
+
+      function initMonthNavigation() {
+        const nav = document.querySelector('main > div:first-child > div:first-child');
+        if (!nav) return;
+
+        const buttons = nav.querySelectorAll('button');
+        buttons.forEach((btn) => {
+          const icon = btn.querySelector('.material-symbols-outlined');
+          if (!icon) return;
+          const text = icon.textContent.trim();
+          if (text === 'chevron_left') {
+            btn.addEventListener('click', () => {
+              currentMonth -= 1;
+              if (currentMonth < 1) {
+                currentMonth = 12;
+                currentYear -= 1;
+              }
+              updatePeriodLabel();
+              loadSummary();
+              loadTransactions();
+            });
+          } else if (text === 'chevron_right') {
+            btn.addEventListener('click', () => {
+              currentMonth += 1;
+              if (currentMonth > 12) {
+                currentMonth = 1;
+                currentYear += 1;
+              }
+              updatePeriodLabel();
+              loadSummary();
+              loadTransactions();
+            });
+          }
+        });
+      }
+
+      function initTypeFilter() {
+        const buttons = document.querySelectorAll('.type-filter-btn');
+        buttons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            currentType = btn.dataset.type;
+            buttons.forEach((b) => {
+              b.classList.remove('bg-primary-container', 'text-on-primary-container');
+              b.classList.add('text-secondary', 'hover:bg-surface-variant');
+            });
+            btn.classList.remove('text-secondary', 'hover:bg-surface-variant');
+            btn.classList.add('bg-primary-container', 'text-on-primary-container');
+            loadTransactions();
+          });
+        });
+      }
+
+      function initAutoRefresh() {
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            loadSummary();
+            loadTransactions();
+          }
+        });
+
+        window.addEventListener('focus', () => {
+          loadSummary();
+          loadTransactions();
+        });
+      }
+
+      updatePeriodLabel();
+      initMonthNavigation();
+      initTypeFilter();
+      initAutoRefresh();
+      loadSummary();
+      loadTransactions();
+      loadRecentTransactions();
+    })();
   </script>
 </body>
 </html>

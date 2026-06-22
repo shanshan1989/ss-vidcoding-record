@@ -2,6 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
+const homeRoutes = require('./routes/home');
+const categoryRoutes = require('./routes/categories');
+const transactionRoutes = require('./routes/transactions');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +24,9 @@ if (process.env.NODE_ENV === 'development') {
 
 // API 路由
 app.use('/api/auth', authRoutes);
+app.use('/api/home', homeRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 // 健康检查
 app.get('/api/health', (req, res) => {
@@ -50,6 +56,11 @@ app.listen(PORT, () => {
 ║  API 端点:                                     ║
 ║  - POST /api/auth/register  (注册)             ║
 ║  - POST /api/auth/login     (登录)             ║
+║  - GET  /api/home/summary   (首页汇总)         ║
+║  - GET  /api/home/budget    (首页预算)         ║
+║  - GET  /api/categories     (分类列表)         ║
+║  - GET  /api/transactions/recent  (最近交易)   ║
+║  - GET  /api/transactions/summary (月度汇总)   ║
 ║  - GET  /api/health        (健康检查)          ║
 ╚════════════════════════════════════════════════╝
   `);

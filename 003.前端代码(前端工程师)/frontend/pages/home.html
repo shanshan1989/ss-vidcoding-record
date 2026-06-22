@@ -193,24 +193,81 @@
         return div.innerHTML;
       }
 
-      function renderHomeCategories() {
+      function formatMoneyDisplay(value) {
+        const num = Number(value);
+        if (isNaN(num)) return '¥0.00';
+        return '¥' + num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      async function loadHomeSummary() {
+        const result = await SSJ.apiRequest('/home/summary', 'GET');
+        if (!result.success || !result.data.success) return;
+
+        const data = result.data.data;
+        const balanceEl = document.querySelector('section.lg\\:col-span-12 h2.font-display-md');
+        const incomeEl = document.querySelector('section.lg\\:col-span-12 h3.font-number-xl.text-on-surface');
+        const expenseEl = document.querySelector('section.lg\\:col-span-12 h3.font-number-xl.text-tertiary');
+
+        if (balanceEl) balanceEl.textContent = formatMoneyDisplay(data.balance);
+        if (incomeEl) incomeEl.textContent = formatMoneyDisplay(data.month_income);
+        if (expenseEl) expenseEl.textContent = formatMoneyDisplay(data.month_expense);
+      }
+
+      async function loadHomeBudget() {
+        const result = await SSJ.apiRequest('/home/budget', 'GET');
+        if (!result.success || !result.data.success) return;
+
+        const data = result.data.data;
+        const descEl = document.querySelector('section.lg\\:col-span-12 p.font-body-sm.text-body-sm.text-text-muted');
+        const amountEl = document.querySelector('section.lg\\:col-span-12 span.font-number-md.text-number-md.text-warning-yellow');
+        const barEl = document.querySelector('section.lg\\:col-span-12 .absolute.left-0.top-0.h-full.bg-warning-yellow');
+        const alertBox = document.querySelector('section.lg\\:col-span-12 .flex.items-center.gap-sm.p-sm.bg-tertiary-fixed');
+
+        if (descEl) descEl.textContent = `本月预算已使用 ${data.used_percentage}%`;
+        if (amountEl) amountEl.textContent = `¥ ${Number(data.used_amount).toLocaleString('zh-CN', { minimumFractionDigits: 2 })} / ¥ ${Number(data.budget_amount).toLocaleString('zh-CN', { minimumFractionDigits: 2 })}`;
+        if (barEl) barEl.style.width = `${data.used_percentage}%`;
+        if (alertBox) {
+          if (data.is_alert) {
+            alertBox.classList.remove('hidden');
+          } else {
+            alertBox.classList.add('hidden');
+          }
+        }
+      }
+
+      let currentCategoryType = 'expense';
+      let selectedCategoryId = null;
+
+      async function renderHomeCategories(type) {
+        currentCategoryType = type;
         const grid = document.getElementById('homeCategoryGrid');
         if (!grid) return;
 
-        const data = window.SSJCategories.loadCategories();
-        const expenseList = data.expense || [];
+        const result = await SSJ.apiRequest(`/categories?type=${type}`, 'GET');
+        if (!result.success || !result.data.success) {
+          grid.innerHTML = '<p class="col-span-full text-center text-secondary">加载分类失败</p>';
+          return;
+        }
+
+        const categories = result.data.data || [];
         grid.innerHTML = '';
 
-        expenseList.forEach((item) => {
+        categories.forEach((item) => {
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'category-btn group flex flex-col items-center gap-xs';
+          btn.dataset.id = item.id;
           btn.innerHTML = `
             <div class="category-icon w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
-              <span class="material-symbols-outlined">${item.icon}</span>
+              <span class="material-symbols-outlined">${escapeHtml(item.icon)}</span>
             </div>
             <span class="font-label-sm text-label-sm text-on-surface-variant">${escapeHtml(item.name)}</span>
           `;
+          btn.addEventListener('click', () => {
+            grid.querySelectorAll('.category-btn').forEach((b) => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedCategoryId = item.id;
+          });
           grid.appendChild(btn);
         });
 
@@ -227,13 +284,142 @@
         grid.appendChild(moreBtn);
       }
 
+      function initTypeToggle() {
+        const btnExpense = document.getElementById('btn-expense');
+        const btnIncome = document.getElementById('btn-income');
+        if (!btnExpense || !btnIncome) return;
+
+        btnExpense.addEventListener('click', () => {
+          btnExpense.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold');
+          btnExpense.classList.remove('text-secondary', 'hover:bg-surface-variant');
+          btnIncome.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold');
+          btnIncome.classList.add('text-secondary', 'hover:bg-surface-variant');
+          currentCategoryType = 'expense';
+          selectedCategoryId = null;
+          document.dispatchEvent(new Event('ssj-type-change'));
+          renderHomeCategories('expense');
+        });
+
+        btnIncome.addEventListener('click', () => {
+          btnIncome.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold');
+          btnIncome.classList.remove('text-secondary', 'hover:bg-surface-variant');
+          btnExpense.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold');
+          btnExpense.classList.add('text-secondary', 'hover:bg-surface-variant');
+          currentCategoryType = 'income';
+          selectedCategoryId = null;
+          document.dispatchEvent(new Event('ssj-type-change'));
+          renderHomeCategories('income');
+        });
+      }
+
+      function showToast(message, isError = false) {
+        const existingToast = document.querySelector('.toast-message');
+        if (existingToast) existingToast.remove();
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-message fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-lg py-md rounded-xl shadow-lg text-white font-body-md text-body-md transition-all duration-300';
+        toast.style.backgroundColor = isError ? '#F44336' : '#4CAF50';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => {
+          toast.classList.add('opacity-100', 'translate-y-0');
+          toast.classList.remove('opacity-0', '-translate-y-4');
+        });
+
+        setTimeout(() => {
+          toast.classList.remove('opacity-100', 'translate-y-0');
+          toast.classList.add('opacity-0', '-translate-y-4');
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+
+      function setButtonLoading(btn, loading) {
+        if (loading) {
+          btn.dataset.originalText = btn.innerHTML;
+          btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span>';
+          btn.disabled = true;
+          btn.classList.add('opacity-70');
+        } else {
+          btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
+          btn.disabled = false;
+          btn.classList.remove('opacity-70');
+        }
+      }
+
+      function getAmountValue() {
+        const input = document.getElementById('amount-input');
+        if (!input) return 0;
+        return Number(input.value) || 0;
+      }
+
+      function setAmountValue(value) {
+        const input = document.getElementById('amount-input');
+        if (input) input.value = Number(value).toFixed(2);
+      }
+
+      function getNoteValue() {
+        const input = document.querySelector('input[placeholder="添加备注..."]');
+        return input ? input.value.trim() : '';
+      }
+
+      function clearNoteValue() {
+        const input = document.querySelector('input[placeholder="添加备注..."]');
+        if (input) input.value = '';
+      }
+
+      function initConfirmButton() {
+        const confirmBtn = document.querySelector('#homeCategoryGrid')?.nextElementSibling?.querySelector('button');
+        if (!confirmBtn) return;
+
+        confirmBtn.addEventListener('click', async () => {
+          const amount = getAmountValue();
+          if (amount <= 0) {
+            showToast('请输入金额', true);
+            return;
+          }
+
+          if (!selectedCategoryId) {
+            showToast('请选择分类', true);
+            return;
+          }
+
+          setButtonLoading(confirmBtn, true);
+
+          const result = await SSJ.apiRequest('/transactions', 'POST', {
+            type: currentCategoryType,
+            amount: amount,
+            category_id: selectedCategoryId,
+            note: getNoteValue()
+          });
+
+          setButtonLoading(confirmBtn, false);
+
+          if (result.success && result.data.success) {
+            showToast(result.data.message || '入账成功');
+            setAmountValue(0);
+            clearNoteValue();
+            selectedCategoryId = null;
+            document.querySelectorAll('.category-btn').forEach((b) => b.classList.remove('active'));
+            loadHomeSummary();
+            loadHomeBudget();
+          } else {
+            showToast(result.data.message || '入账失败', true);
+          }
+        });
+      }
+
       document.addEventListener('DOMContentLoaded', () => {
         // 检查登录状态
         if (!SSJ.isLoggedIn()) {
           window.location.href = '../index.html';
           return;
         }
-        renderHomeCategories();
+        loadHomeSummary();
+        loadHomeBudget();
+        initTypeToggle();
+        renderHomeCategories('expense');
+        initConfirmButton();
       });
     })();
   </script>

@@ -4,104 +4,146 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-随手记账是一个轻量级个人记账工具的网页版（V1.0.1），基于原生 HTML/CSS/JavaScript 开发，无需构建工具即可在浏览器中运行。
+随手记账是一个轻量级个人记账工具（V1.0.1），包含前端页面、后端 API 和 MySQL 数据库。
+
+## 项目结构
+
+```
+myproduct/
+├── 001.产品PRD/                    # 产品需求文档
+│   ├── 财务记账产品需求文档.md
+│   └── 随手记账网站/               # 旧版单文件原型
+├── 002.产品UI 原型(美术设计)/     # UI 设计稿
+├── 003.前端代码(前端工程师)/
+│   ├── frontend/                  # 前端页面（Tailwind CSS）
+│   │   ├── index.html             # 登录页
+│   │   ├── pages/                 # 各功能页面
+│   │   │   ├── home.html          # 首页（记账）
+│   │   │   ├── transactions.html   # 账单明细
+│   │   │   ├── statistics.html     # 统计报表
+│   │   │   ├── settings.html      # 设置
+│   │   │   ├── categories.html    # 分类管理
+│   │   │   └── register.html       # 注册页
+│   │   └── assets/js/
+│   │       ├── auth.js            # 登录注册逻辑
+│   │       ├── shared.js          # 共享工具函数
+│   │       └── categories-data.js  # 分类数据
+│   └── backend/                   # 后端 API（Node.js + Express）
+│       ├── src/
+│       │   ├── app.js             # Express 主入口
+│       │   ├── config/db.js       # MySQL 连接池
+│       │   ├── models/            # 数据模型
+│       │   ├── controllers/       # 业务控制器
+│       │   └── routes/           # API 路由
+│       └── package.json
+└── 004.数据库管理(数据库管理员)/   # 数据库
+    ├── init_database.sql          # 初始化脚本
+    └── 随手记账数据库设计.md       # 设计文档
+```
 
 ## 运行命令
 
-### 打开网页应用
+### 前端开发服务器
 
 ```bash
-open "001.产品PRD/随手记账网站/index.html"
-```
-
-### 本地开发服务器（推荐）
-
-```bash
-cd "001.产品PRD/随手记账网站"
+cd "003.前端代码(前端工程师)/frontend"
 python3 -m http.server 8080
 # 访问 http://localhost:8080
 ```
 
-### 语法检查
+### 后端启动
 
 ```bash
-node --check "001.产品PRD/随手记账网站/app.js"
+cd "003.前端代码(前端工程师)/backend"
+npm install        # 首次安装依赖
+npm start          # 启动服务 (http://localhost:3000)
 ```
+
+### 数据库连接
+
+```bash
+# MySQL Docker 容器
+docker exec -it mysql9 mysql --default-character-set=utf8mb4 -uroot -p123456 suishouji
+
+# 重新初始化数据库
+docker exec -i mysql9 mysql --default-character-set=utf8mb4 -uroot -p123456 < "004.数据库管理(数据库管理员)/init_database.sql"
+```
+
+## 技术栈
+
+### 前端
+- HTML5 + CSS3 + JavaScript（ES6+）
+- Tailwind CSS（CDN）
+- Material Symbols 图标
+
+### 后端
+- Node.js + Express
+- mysql2（MySQL 连接池）
+- bcryptjs（密码加密）
+
+### 数据库
+- MySQL 9.7
+- 字符集：utf8mb4
+
+## API 接口
+
+| 接口 | 方法 | 说明 |
+|-----|------|------|
+| `/api/auth/register` | POST | 用户注册 |
+| `/api/auth/login` | POST | 用户登录 |
+| `/api/health` | GET | 健康检查 |
 
 ## 架构说明
 
-### 技术栈
-- **前端**：原生 HTML5 + CSS3 + JavaScript（ES6+）
-- **图表**：Chart.js（CDN 引入）
-- **日期处理**：Day.js（CDN 引入）
-- **数据存储**：浏览器 LocalStorage（按用户 ID 隔离）
+### 前端认证流程
+1. 用户在 `index.html` 登录或注册
+2. 成功后用户信息存储在 `localStorage.ssj_user_session`
+3. 各页面通过 `SSJ.isLoggedIn()` 检查登录状态
+4. 未登录自动跳转登录页
 
-### 文件结构
-```
-随手记账网站/
-├── index.html   # 页面结构（所有页面模块在一个文件中）
-├── styles.css   # 样式表
-├── app.js       # 应用逻辑（单文件，包含所有模块）
-└── README.md    # 使用说明
-```
+### 后端分层
+- **Routes**: 定义 API 路由（如 `/api/auth/*`）
+- **Controllers**: 处理请求逻辑
+- **Models**: 数据库操作
 
-### 代码架构（app.js）
-
-应用采用单文件模块化组织，主要模块：
-
-1. **用户认证模块**（顶部）
-   - `getUsers()` / `saveUsers()` - 用户列表管理
-   - `register()` / `login()` / `logout()` - 认证操作
-   - `getUserDataKey()` - 按用户隔离数据 key
-
-2. **状态管理**
-   - 全局 `state` 对象管理应用状态
-   - `loadUserData()` / `saveUserData()` - 数据持久化
-
-3. **页面模块**（按功能划分）
-   - 认证界面：`initAuth()`, `showAuthScreen()`, `showMainScreen()`
-   - 页面导航：`initNavigation()`, `switchPage()`
-   - 首页记账：`initHome()`, `renderHome()`, `handleKeypad()`, `confirmTransaction()`
-   - 明细列表：`initDetails()`, `renderDetails()`, `renderTransactionList()`
-   - 统计报表：`initStats()`, `renderStats()`, `renderCategoryChart()`, `renderTrendChart()`
-   - 设置页：`initProfile()`, `handleProfileAction()`
-   - 弹窗/操作表：`showModal()`, `showActionSheet()`, `showToast()`
-   - 各功能管理：账户、分类、预算、提醒、数据备份/导出
-
-4. **初始化**
-   - `init()` 入口函数在文件末尾调用
-   - 初始化顺序：auth → navigation → 各页面 → 加载数据 → 启动
-
-### LocalStorage 数据结构
-
-| Key | 说明 |
-|-----|------|
-| `ssj_users` | 用户列表（JSON 数组） |
-| `ssj_current_user` | 当前登录用户 ID |
-| `ssj_data_{userId}` | 用户专属数据（账单、分类、账户等） |
-| `ssj_last_account` | 上次使用的账户 ID |
+### 数据库表结构
+- `users` - 用户表
+- `categories` - 分类表（系统默认 + 用户自定义）
+- `accounts` - 账户表
+- `transactions` - 账单表
+- `budgets` - 预算表
+- `reminders` - 提醒表
+- `backups` - 备份记录表
 
 ## 开发注意事项
 
-### 添加新页面
-1. 在 `index.html` 中添加 `<section id="page-xxx" class="page">`
-2. 在 `app.js` 中添加 `initXxx()` 和 `renderXxx()` 函数
-3. 在 `init()` 中调用 `initXxx()`
-4. 在 `switchPage()` 中添加渲染调用
+### 添加新的 API 端点
+1. 在 `routes/` 创建路由文件
+2. 在 `controllers/` 创建控制器
+3. 在 `models/` 创建数据模型
+4. 在 `app.js` 中注册路由
 
-### 添加新功能到「我的」页面
-1. 在 `index.html` 中添加 `.menu-item[data-action="xxx"]`
-2. 在 `handleProfileAction()` 中添加 case 分支
+### 前端页面权限控制
+```javascript
+// 在页面脚本中添加
+if (!SSJ.isLoggedIn()) {
+  window.location.href = '../index.html';
+  return;
+}
+```
 
-### 样式命名约定
-- 页面容器：`.page`, `.page.active`
-- 卡片：`.xxx-card`
-- 列表项：`.xxx-item`
-- 操作按钮：`.btn`, `.btn-primary`, `.btn-danger`
-- 弹窗：`.modal`, `.modal-overlay`, `.modal-content`
-- 操作表：`.action-sheet`
+### 环境变量
+后端 `.env` 文件（不在 git 中）：
+```
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=123456
+DB_NAME=suishouji
+PORT=3000
+```
 
 ## 相关文件
 
 - [001.产品PRD/财务记账产品需求文档.md](001.产品PRD/财务记账产品需求文档.md) - 产品需求文档
-- [001.产品PRD/随手记账网站/README.md](001.产品PRD/随手记账网站/README.md) - 使用说明
+- [004.数据库管理(数据库管理员)/随手记账数据库设计.md](004.数据库管理(数据库管理员)/随手记账数据库设计.md) - 数据库设计文档

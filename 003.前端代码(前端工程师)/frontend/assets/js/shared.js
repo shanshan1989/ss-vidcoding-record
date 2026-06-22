@@ -130,11 +130,22 @@
 
     try {
       const response = await fetch(url, options);
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        // 响应体不是 JSON，尝试获取文本
+        const text = await response.text();
+        return {
+          success: false,
+          data: { message: text || `HTTP ${response.status}` },
+          status: response.status
+        };
+      }
       return { success: response.ok, data, status: response.status };
     } catch (error) {
       console.error('API 请求错误:', error);
-      return { success: false, data: { message: '网络错误' }, status: 0 };
+      return { success: false, data: { message: '网络错误，请检查服务器是否运行' }, status: 0 };
     }
   }
 
