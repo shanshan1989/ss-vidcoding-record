@@ -271,17 +271,6 @@
           grid.appendChild(btn);
         });
 
-        // Add "more" button
-        const moreBtn = document.createElement('a');
-        moreBtn.href = './categories.html';
-        moreBtn.className = 'category-btn group flex flex-col items-center gap-xs';
-        moreBtn.innerHTML = `
-          <div class="category-icon w-14 h-14 rounded-2xl bg-surface-container-low flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300">
-            <span class="material-symbols-outlined">grid_view</span>
-          </div>
-          <span class="font-label-sm text-label-sm text-on-surface-variant">更多</span>
-        `;
-        grid.appendChild(moreBtn);
       }
 
       function initTypeToggle() {

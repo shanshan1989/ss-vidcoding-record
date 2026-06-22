@@ -183,8 +183,8 @@
             SSJ.apiRequest('/categories?type=expense', 'GET'),
             SSJ.apiRequest('/categories?type=income', 'GET')
           ]);
-          categoriesData.expense = (expRes.data?.data || expRes.data || []).filter(c => !c.is_system || c.id.startsWith('cat_u_'));
-          categoriesData.income = (incRes.data?.data || incRes.data || []).filter(c => !c.is_system || c.id.startsWith('cat_u_'));
+          categoriesData.expense = (expRes.data?.data || expRes.data || []);
+          categoriesData.income = (incRes.data?.data || incRes.data || []);
           renderList();
         } catch (e) { console.error(e); }
       }
