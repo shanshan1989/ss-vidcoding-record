@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const homeRoutes = require('./routes/home');
 const categoryRoutes = require('./routes/categories');
 const transactionRoutes = require('./routes/transactions');
+const statisticsRoutes = require('./routes/statistics');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/home', homeRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/statistics', statisticsRoutes);
 
 // 健康检查
 app.get('/api/health', (req, res) => {
@@ -61,6 +63,7 @@ app.listen(PORT, () => {
 ║  - GET  /api/categories     (分类列表)         ║
 ║  - GET  /api/transactions/recent  (最近交易)   ║
 ║  - GET  /api/transactions/summary (月度汇总)   ║
+║  - GET  /api/statistics/*   (统计报表)         ║
 ║  - GET  /api/health        (健康检查)          ║
 ╚════════════════════════════════════════════════╝
   `);

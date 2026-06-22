@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 </head>
 <body class="bg-surface text-on-background font-body-md min-h-screen flex flex-col">
   <!-- Top Navigation Bar -->
@@ -39,29 +40,41 @@
         <p class="text-text-muted font-body-md text-body-md">洞察您的收支详情与趋势</p>
       </div>
       <div class="flex items-center bg-surface-container-high p-xs rounded-xl shadow-inner">
-        <button type="button" class="px-md py-sm rounded-lg bg-surface-container-lowest text-primary font-bold shadow-sm font-label-md text-label-md">2026年 10月</button>
-        <button type="button" class="px-md py-sm rounded-lg text-secondary hover:bg-surface-variant transition-colors font-label-md text-label-md">2026年 09月</button>
-        <button type="button" class="px-md py-sm rounded-lg text-secondary hover:bg-surface-variant transition-colors font-label-md text-label-md">更多历史</button>
-        <button type="button" class="ml-xs p-sm text-primary material-symbols-outlined hover:bg-surface-variant rounded-lg transition-colors">calendar_month</button>
+        <button type="button" id="yearSelector" class="px-md py-sm rounded-lg text-secondary hover:bg-surface-variant transition-colors font-label-md text-label-md"></button>
+        <button type="button" id="monthSelector" class="px-md py-sm rounded-lg bg-surface-container-lowest text-primary font-bold shadow-sm font-label-md text-label-md"></button>
+        <button type="button" id="calendarBtn" class="ml-xs p-sm text-primary material-symbols-outlined hover:bg-surface-variant rounded-lg transition-colors">calendar_month</button>
       </div>
     </header>
 
+    <!-- Calendar Popup -->
+    <div id="calendarPopup" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center">
+      <div class="bg-surface-container-lowest rounded-xl p-lg shadow-xl w-80 max-w-[90vw]">
+        <div class="flex justify-between items-center mb-md">
+          <button type="button" id="calPrevYear" class="p-sm hover:bg-surface-variant rounded-lg transition-colors material-symbols-outlined text-on-surface">chevron_left</button>
+          <span id="calYearLabel" class="font-headline-lg text-headline-lg text-on-surface"></span>
+          <button type="button" id="calNextYear" class="p-sm hover:bg-surface-variant rounded-lg transition-colors material-symbols-outlined text-on-surface">chevron_right</button>
+        </div>
+        <div class="grid grid-cols-4 gap-sm" id="calMonthGrid"></div>
+        <button type="button" id="calClose" class="mt-md w-full py-sm bg-surface-variant text-on-surface rounded-lg font-label-md text-label-md hover:bg-surface-container-high transition-colors">关闭</button>
+      </div>
+    </div>
+
     <!-- Section 1: Income vs. Expense Comparison Cards -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-gutter animate-fade-in" style="animation-delay: 0.1s;">
+    <section id="summaryCards" class="grid grid-cols-1 md:grid-cols-3 gap-gutter animate-fade-in" style="animation-delay: 0.1s;">
       <!-- Expense Card -->
       <div class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-border-light flex flex-col justify-between group hover:shadow-md transition-shadow">
         <div class="flex justify-between items-start">
           <div class="p-sm bg-error-container text-on-error-container rounded-lg">
             <span class="material-symbols-outlined">trending_down</span>
           </div>
-          <span class="text-error font-label-sm text-label-sm">较上月 +12.5%</span>
+          <span class="text-text-muted font-label-sm text-label-sm"></span>
         </div>
         <div class="mt-md">
-          <p class="text-text-muted font-label-md text-label-md">总支出</p>
-          <h3 class="font-number-xl text-number-xl text-on-surface">¥ 12,480.00</h3>
+          <p class="text-text-muted font-label-md text-label-md">本月支出</p>
+          <h3 class="font-number-xl text-number-xl text-on-surface" id="totalExpense">¥ 0.00</h3>
         </div>
         <div class="w-full bg-surface-variant h-1 rounded-full mt-lg overflow-hidden">
-          <div class="bg-error h-full" style="width: 75%;"></div>
+          <div class="bg-error h-full transition-all duration-500" id="expenseBar" style="width: 0%;"></div>
         </div>
       </div>
 
@@ -71,14 +84,14 @@
           <div class="p-sm bg-primary-container text-on-primary-container rounded-lg">
             <span class="material-symbols-outlined">trending_up</span>
           </div>
-          <span class="text-primary font-label-sm text-label-sm">较上月 +5.2%</span>
+          <span class="text-text-muted font-label-sm text-label-sm"></span>
         </div>
         <div class="mt-md">
-          <p class="text-text-muted font-label-md text-label-md">总收入</p>
-          <h3 class="font-number-xl text-number-xl text-on-surface">¥ 18,600.00</h3>
+          <p class="text-text-muted font-label-md text-label-md">本月收入</p>
+          <h3 class="font-number-xl text-number-xl text-on-surface" id="totalIncome">¥ 0.00</h3>
         </div>
         <div class="w-full bg-surface-variant h-1 rounded-full mt-lg overflow-hidden">
-          <div class="bg-primary h-full" style="width: 45%;"></div>
+          <div class="bg-primary h-full transition-all duration-500" id="incomeBar" style="width: 0%;"></div>
         </div>
       </div>
 
@@ -91,12 +104,12 @@
           <span class="material-symbols-outlined">savings</span>
         </div>
         <div class="mt-md relative z-10">
-          <p class="opacity-80 font-label-md text-label-md">本月结余</p>
-          <h3 class="font-number-xl text-number-xl">¥ 6,120.00</h3>
+          <p class="opacity-80 font-label-md text-label-md" id="balanceLabel">本月结余</p>
+          <h3 class="font-number-xl text-number-xl" id="totalBalance">¥ 0.00</h3>
         </div>
-        <a href="./savings.html" class="mt-lg py-sm px-md bg-on-primary text-primary rounded-lg font-bold font-label-md text-label-md w-full active:scale-95 transition-transform text-center inline-block">
-          查看储蓄详情
-        </a>
+        <div class="mt-lg py-sm px-md bg-on-primary text-primary rounded-lg font-bold font-label-md text-label-md w-full text-center inline-block">
+          收支相抵
+        </div>
       </div>
     </section>
 
@@ -106,69 +119,15 @@
       <section class="lg:col-span-8 bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-border-light animate-fade-in" style="animation-delay: 0.2s;">
         <div class="flex justify-between items-center mb-lg">
           <h2 class="font-headline-lg text-headline-lg text-on-surface">支出构成</h2>
-          <select class="bg-surface-container-low border-none rounded-lg text-body-sm font-body-sm focus:ring-primary">
-            <option>按一级分类</option>
-            <option>按二级分类</option>
-          </select>
         </div>
 
         <div class="flex flex-col md:flex-row items-center gap-xl">
-          <!-- SVG Pie Chart -->
-          <div class="relative w-64 h-64 flex items-center justify-center">
-            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#006c49" stroke-width="20" stroke-dasharray="100.5 151.2" stroke-dashoffset="0"></circle>
-              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10b981" stroke-width="20" stroke-dasharray="75.4 176.3" stroke-dashoffset="-100.5"></circle>
-              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#a43a3a" stroke-width="20" stroke-dasharray="50.2 201.5" stroke-dashoffset="-175.9"></circle>
-              <circle cx="50" cy="50" r="40" fill="transparent" stroke="#5c5f60" stroke-width="20" stroke-dasharray="25.1 226.6" stroke-dashoffset="-226.1"></circle>
-            </svg>
-            <div class="absolute flex flex-col items-center">
-              <span class="text-text-muted font-label-sm text-label-sm">总支出</span>
-              <span class="font-number-md text-number-md">¥12.4k</span>
-            </div>
-          </div>
+          <!-- ECharts Pie Chart -->
+          <div id="pieChart" class="relative w-64 h-64"></div>
 
           <!-- Legend -->
-          <div class="flex-1 w-full space-y-md">
-            <div class="flex items-center justify-between group cursor-default">
-              <div class="flex items-center gap-sm">
-                <span class="w-3 h-3 rounded-full bg-primary"></span>
-                <span class="font-body-md text-body-md">餐饮美食</span>
-              </div>
-              <div class="text-right">
-                <span class="font-number-md text-number-md">¥ 4,992</span>
-                <span class="ml-sm text-text-muted font-label-sm text-label-sm">40%</span>
-              </div>
-            </div>
-            <div class="flex items-center justify-between group cursor-default">
-              <div class="flex items-center gap-sm">
-                <span class="w-3 h-3 rounded-full bg-primary-container"></span>
-                <span class="font-body-md text-body-md">生活购物</span>
-              </div>
-              <div class="text-right">
-                <span class="font-number-md text-number-md">¥ 3,744</span>
-                <span class="ml-sm text-text-muted font-label-sm text-label-sm">30%</span>
-              </div>
-            </div>
-            <div class="flex items-center justify-between group cursor-default">
-              <div class="flex items-center gap-sm">
-                <span class="w-3 h-3 rounded-full bg-tertiary"></span>
-                <span class="font-body-md text-body-md">交通出行</span>
-              </div>
-              <div class="text-right">
-                <span class="font-number-md text-number-md">¥ 2,496</span>
-                <span class="ml-sm text-text-muted font-label-sm text-label-sm">20%</span>
-              </div>
-            </div>
-            <div class="flex items-center justify-between group cursor-default">
-              <div class="flex items-center gap-sm">
-                <span class="w-3 h-3 rounded-full bg-secondary"></span>
-                <span class="font-body-md text-body-md">其他支出</span>
-              </div>
-              <div class="text-right">
-                <span class="font-number-md text-number-md">¥ 1,248</span>
-                <span class="ml-sm text-text-muted font-label-sm text-label-sm">10%</span>
-              </div>
-            </div>
+          <div class="flex-1 w-full space-y-md" id="pieLegend">
+            <div class="text-text-muted text-body-sm">加载中...</div>
           </div>
         </div>
       </section>
@@ -176,183 +135,34 @@
       <!-- Section 4: Top 5 Spending Categories -->
       <section class="lg:col-span-4 bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-border-light animate-fade-in" style="animation-delay: 0.3s;">
         <h2 class="font-headline-lg text-headline-lg text-on-surface mb-lg">支出排行 Top 5</h2>
-        <div class="space-y-lg">
-          <!-- Rank 1 -->
-          <div class="flex items-center gap-md">
-            <span class="font-bold text-primary italic w-4">1</span>
-            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined">restaurant</span>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-label-md text-label-md">午餐/晚餐</span>
-                <span class="font-number-md text-number-md">¥2,840</span>
-              </div>
-              <div class="w-full bg-surface-variant h-1.5 rounded-full">
-                <div class="bg-primary h-full rounded-full" style="width: 85%;"></div>
-              </div>
-            </div>
-          </div>
-          <!-- Rank 2 -->
-          <div class="flex items-center gap-md">
-            <span class="font-bold text-primary italic w-4">2</span>
-            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined">shopping_cart</span>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-label-md text-label-md">超市采购</span>
-                <span class="font-number-md text-number-md">¥1,920</span>
-              </div>
-              <div class="w-full bg-surface-variant h-1.5 rounded-full">
-                <div class="bg-primary h-full rounded-full" style="width: 65%;"></div>
-              </div>
-            </div>
-          </div>
-          <!-- Rank 3 -->
-          <div class="flex items-center gap-md">
-            <span class="font-bold text-primary italic w-4">3</span>
-            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined">directions_car</span>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-label-md text-label-md">车辆加油</span>
-                <span class="font-number-md text-number-md">¥1,450</span>
-              </div>
-              <div class="w-full bg-surface-variant h-1.5 rounded-full">
-                <div class="bg-primary h-full rounded-full" style="width: 50%;"></div>
-              </div>
-            </div>
-          </div>
-          <!-- Rank 4 -->
-          <div class="flex items-center gap-md">
-            <span class="font-bold text-text-muted italic w-4">4</span>
-            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined">movie</span>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-label-md text-label-md">娱乐演出</span>
-                <span class="font-number-md text-number-md">¥860</span>
-              </div>
-              <div class="w-full bg-surface-variant h-1.5 rounded-full">
-                <div class="bg-primary h-full rounded-full" style="width: 35%;"></div>
-              </div>
-            </div>
-          </div>
-          <!-- Rank 5 -->
-          <div class="flex items-center gap-md">
-            <span class="font-bold text-text-muted italic w-4">5</span>
-            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-              <span class="material-symbols-outlined">medication</span>
-            </div>
-            <div class="flex-1">
-              <div class="flex justify-between items-center mb-1">
-                <span class="font-label-md text-label-md">医药保障</span>
-                <span class="font-number-md text-number-md">¥540</span>
-              </div>
-              <div class="w-full bg-surface-variant h-1.5 rounded-full">
-                <div class="bg-primary h-full rounded-full" style="width: 20%;"></div>
-              </div>
-            </div>
-          </div>
+        <div id="top5Container" class="space-y-lg">
+          <div class="text-text-muted text-body-sm">加载中...</div>
         </div>
       </section>
     </div>
 
-    <!-- Section 3: Daily Spending Trends (Bar Chart) -->
+    <!-- Section 3: Monthly Income/Expense Trends (Line Chart) -->
     <section class="bg-surface-container-lowest p-lg rounded-xl shadow-sm border border-border-light animate-fade-in" style="animation-delay: 0.4s;">
       <div class="flex flex-col md:flex-row justify-between md:items-center mb-xl gap-md">
         <div>
-          <h2 class="font-headline-lg text-headline-lg text-on-surface">每日支出趋势</h2>
-          <p class="text-text-muted font-body-sm text-body-sm">本月截止至今的支出分布</p>
+          <h2 class="font-headline-lg text-headline-lg text-on-surface">每月收支情况</h2>
+          <p class="text-text-muted font-body-sm text-body-sm" id="trendSubtitle">按月统计全年收支趋势</p>
         </div>
         <div class="flex gap-sm">
           <div class="flex items-center gap-xs">
-            <span class="w-3 h-3 rounded-full bg-primary"></span>
-            <span class="text-label-sm font-label-sm">支出额</span>
+            <span class="w-3 h-3 rounded-full bg-error"></span>
+            <span class="text-label-sm font-label-sm">支出</span>
           </div>
           <div class="flex items-center gap-xs ml-md">
-            <span class="w-3 h-3 rounded-full bg-surface-variant"></span>
-            <span class="text-label-sm font-label-sm">平均线 (¥402)</span>
+            <span class="w-3 h-3 rounded-full bg-primary"></span>
+            <span class="text-label-sm font-label-sm">收入</span>
           </div>
         </div>
       </div>
 
-      <div class="relative h-64 w-full flex items-end gap-1 md:gap-2">
-        <!-- Bars -->
-        <div class="flex-1 bg-primary/20 rounded-t-sm bar-transition group relative" style="height: 40%;">
-          <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-white text-[10px] px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">¥320</div>
-        </div>
-        <div class="flex-1 bg-primary/30 rounded-t-sm bar-transition group relative" style="height: 55%;"></div>
-        <div class="flex-1 bg-primary rounded-t-sm bar-transition group relative" style="height: 90%;">
-          <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-white text-[10px] px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">¥890</div>
-        </div>
-        <div class="flex-1 bg-primary/40 rounded-t-sm bar-transition" style="height: 30%;"></div>
-        <div class="flex-1 bg-primary/60 rounded-t-sm bar-transition" style="height: 45%;"></div>
-        <div class="flex-1 bg-primary/25 rounded-t-sm bar-transition" style="height: 35%;"></div>
-        <div class="flex-1 bg-primary/80 rounded-t-sm bar-transition" style="height: 70%;"></div>
-        <div class="flex-1 bg-primary/10 rounded-t-sm bar-transition" style="height: 15%;"></div>
-        <div class="flex-1 bg-primary/50 rounded-t-sm bar-transition" style="height: 50%;"></div>
-        <div class="flex-1 bg-primary rounded-t-sm bar-transition" style="height: 85%;"></div>
-        <div class="flex-1 bg-primary/35 rounded-t-sm bar-transition" style="height: 40%;"></div>
-        <div class="flex-1 bg-primary/20 rounded-t-sm bar-transition" style="height: 25%;"></div>
-        <div class="flex-1 bg-primary/70 rounded-t-sm bar-transition" style="height: 65%;"></div>
-        <div class="flex-1 bg-primary/90 rounded-t-sm bar-transition" style="height: 80%;"></div>
-        <div class="flex-1 bg-primary/45 rounded-t-sm bar-transition" style="height: 50%;"></div>
-        <div class="flex-1 bg-primary/15 rounded-t-sm bar-transition" style="height: 20%;"></div>
-        <div class="flex-1 bg-primary/65 rounded-t-sm bar-transition" style="height: 60%;"></div>
-        <div class="flex-1 bg-primary rounded-t-sm bar-transition" style="height: 95%;"></div>
-        <div class="flex-1 bg-primary/40 rounded-t-sm bar-transition" style="height: 38%;"></div>
-        <div class="flex-1 bg-primary/55 rounded-t-sm bar-transition" style="height: 52%;"></div>
-        <div class="flex-1 bg-primary/30 rounded-t-sm bar-transition" style="height: 30%;"></div>
-        <div class="flex-1 bg-primary/20 rounded-t-sm bar-transition" style="height: 18%;"></div>
-        <div class="flex-1 bg-primary/75 rounded-t-sm bar-transition" style="height: 72%;"></div>
-        <div class="flex-1 bg-primary/45 rounded-t-sm bar-transition" style="height: 48%;"></div>
-        <div class="flex-1 bg-primary/10 rounded-t-sm bar-transition" style="height: 12%;"></div>
-        <div class="flex-1 bg-primary/60 rounded-t-sm bar-transition" style="height: 58%;"></div>
-        <div class="flex-1 bg-primary/85 rounded-t-sm bar-transition" style="height: 82%;"></div>
-        <div class="flex-1 bg-primary/35 rounded-t-sm bar-transition" style="height: 42%;"></div>
-        <div class="flex-1 bg-primary/50 rounded-t-sm bar-transition" style="height: 55%;"></div>
-        <div class="flex-1 bg-primary/25 rounded-t-sm bar-transition" style="height: 28%;"></div>
-        <div class="flex-1 bg-primary/95 rounded-t-sm bar-transition" style="height: 100%;"></div>
-        <!-- Average Line -->
-        <div class="absolute w-full h-px bg-on-surface-variant/20 bottom-[40%] border-t border-dashed"></div>
-      </div>
-
-      <div class="flex justify-between mt-sm text-text-muted font-label-sm text-label-sm">
-        <span>01</span>
-        <span>05</span>
-        <span>10</span>
-        <span>15</span>
-        <span>20</span>
-        <span>25</span>
-        <span>31</span>
-      </div>
+      <div id="lineChart" class="h-64 w-full"></div>
     </section>
 
-    <!-- Insights / Smart Advice Bento -->
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-gutter animate-fade-in" style="animation-delay: 0.5s;">
-      <div class="bg-surface-container p-lg rounded-xl border border-border-light flex items-start gap-lg">
-        <div class="p-md bg-warning-yellow/20 text-warning-yellow rounded-full">
-          <span class="material-symbols-outlined">lightbulb</span>
-        </div>
-        <div>
-          <h4 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">支出预警</h4>
-          <p class="text-body-sm font-body-sm text-on-surface-variant mt-xs">本月“餐饮”类别已达预算的 92%。建议后续减少外出就餐，多在家烹饪以节省开支。</p>
-        </div>
-      </div>
-      <div class="bg-surface-container-high p-lg rounded-xl border border-border-light flex items-start gap-lg">
-        <div class="p-md bg-primary/20 text-primary rounded-full">
-          <span class="material-symbols-outlined">verified</span>
-        </div>
-        <div>
-          <h4 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">省钱达人</h4>
-          <p class="text-body-sm font-body-sm text-on-surface-variant mt-xs">相比上月，您的“交通”支出降低了 15%。坚持公共交通出行，您本月多攒下了 ¥420。</p>
-        </div>
-      </div>
-    </section>
   </main>
 
   <!-- Footer -->
@@ -382,34 +192,333 @@
 
   <script src="../assets/js/shared.js"></script>
   <script>
-    // Auth check
+    // ==================== State ====================
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    let pieChartInstance = null;
+    let lineChartInstance = null;
+
+    // ==================== Auth Check ====================
     if (!SSJ.isLoggedIn()) {
       window.location.href = '../index.html';
     }
 
-    // Month selector interactivity
-    document.querySelectorAll('header button').forEach((btn) => {
-      btn.addEventListener('click', function () {
-        if (this.classList.contains('material-symbols-outlined')) return;
-        document.querySelectorAll('header button').forEach((b) => {
-          b.classList.remove('bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
-          b.classList.add('text-secondary');
-        });
-        this.classList.remove('text-secondary');
-        this.classList.add('bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
+    // ==================== Utility ====================
+    function formatMoney(value) {
+      return '¥ ' + Number(value).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function formatMoneyShort(value) {
+      const n = Number(value);
+      if (n >= 10000) return '¥' + (n / 10000).toFixed(1) + 'k';
+      return '¥ ' + n.toFixed(0);
+    }
+
+    // ==================== Year/Month Selector ====================
+    function updateHeaderButtons() {
+      document.getElementById('yearSelector').textContent = currentYear + '年';
+      document.getElementById('monthSelector').textContent = currentMonth + '月';
+    }
+
+    document.getElementById('yearSelector').addEventListener('click', function () {
+      document.querySelectorAll('header .flex.items-center > button').forEach(b => {
+        b.classList.remove('bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
+        b.classList.add('text-secondary');
       });
+      this.classList.remove('text-secondary');
+      this.classList.add('bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
+      currentYear--;
+      updateHeaderButtons();
+      loadAllData();
     });
 
-    // Bar chart load animation
-    window.addEventListener('load', () => {
-      const bars = document.querySelectorAll('.bar-transition');
-      bars.forEach((bar, index) => {
-        const finalHeight = bar.style.height;
-        bar.style.height = '0px';
-        setTimeout(() => {
-          bar.style.height = finalHeight;
-        }, 100 + index * 20);
+    document.getElementById('monthSelector').addEventListener('click', function () {
+      document.querySelectorAll('header .flex.items-center > button').forEach(b => {
+        b.classList.remove('bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
+        b.classList.add('text-secondary');
       });
+      this.classList.remove('text-secondary');
+      this.classList.add('bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
+      currentMonth = currentMonth % 12 + 1;
+      if (currentMonth === 1) currentYear--;
+      updateHeaderButtons();
+      loadAllData();
+    });
+
+    // ==================== Calendar Popup ====================
+    let calYear = currentYear;
+
+    function openCalendar() {
+      calYear = currentYear;
+      renderCalendar();
+      document.getElementById('calendarPopup').classList.remove('hidden');
+    }
+
+    function closeCalendar() {
+      document.getElementById('calendarPopup').classList.add('hidden');
+    }
+
+    function renderCalendar() {
+      document.getElementById('calYearLabel').textContent = calYear + '年';
+      const grid = document.getElementById('calMonthGrid');
+      grid.innerHTML = '';
+      const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+      months.forEach((label, i) => {
+        const m = i + 1;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = label;
+        const isActive = m === currentMonth && calYear === currentYear;
+        btn.className = 'py-sm rounded-lg font-label-md text-label-md transition-colors ' +
+          (isActive
+            ? 'bg-primary text-on-primary font-bold'
+            : 'text-on-surface hover:bg-surface-variant');
+        btn.addEventListener('click', () => {
+          currentYear = calYear;
+          currentMonth = m;
+          updateHeaderButtons();
+          loadAllData();
+          closeCalendar();
+          document.querySelectorAll('header .flex.items-center > button').forEach(b => {
+            b.classList.remove('bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
+            b.classList.add('text-secondary');
+          });
+          document.getElementById('monthSelector').classList.remove('text-secondary');
+          document.getElementById('monthSelector').classList.add('bg-surface-container-lowest', 'text-primary', 'font-bold', 'shadow-sm');
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    document.getElementById('calendarBtn').addEventListener('click', openCalendar);
+    document.getElementById('calClose').addEventListener('click', closeCalendar);
+    document.getElementById('calPrevYear').addEventListener('click', () => { calYear--; renderCalendar(); });
+    document.getElementById('calNextYear').addEventListener('click', () => { calYear++; renderCalendar(); });
+    document.getElementById('calendarPopup').addEventListener('click', function (e) {
+      if (e.target === this) closeCalendar();
+    });
+
+    // ==================== API Calls ====================
+    async function loadAllData() {
+      await Promise.all([
+        loadYearlySummary(),
+        loadExpenseByCategory(),
+        loadTopExpenses(),
+        loadMonthlyTrend()
+      ]);
+    }
+
+    async function loadYearlySummary() {
+      try {
+        const res = await SSJ.apiRequest(`/statistics/yearly-summary?year=${currentYear}&month=${currentMonth}`, 'GET');
+        if (!res.success || !res.data) return;
+        // 兼容双重包装: res.data.data 或 res.data (共享.js统一格式)
+        const d = res.data.data || res.data;
+        document.getElementById('totalExpense').textContent = formatMoney(d.total_expense);
+        document.getElementById('totalIncome').textContent = formatMoney(d.total_income);
+        document.getElementById('totalBalance').textContent = formatMoney(d.balance);
+        // Update progress bars
+        const maxVal = Math.max(Number(d.total_income), Number(d.total_expense));
+        document.getElementById('expenseBar').style.width = maxVal > 0 ? (Number(d.total_expense) / maxVal * 100) + '%' : '0%';
+        document.getElementById('incomeBar').style.width = maxVal > 0 ? (Number(d.total_income) / maxVal * 100) + '%' : '0%';
+      } catch (e) {
+        console.error('yearlySummary error', e);
+      }
+    }
+
+    async function loadExpenseByCategory() {
+      try {
+        const res = await SSJ.apiRequest(`/statistics/expense-by-category?year=${currentYear}&month=${currentMonth}`, 'GET');
+        if (!res.success || !res.data) return;
+        const d = res.data.data || res.data;
+        renderPieChart(d.categories, d.total_expense);
+        renderPieLegend(d.categories, d.total_expense);
+      } catch (e) {
+        console.error('expenseByCategory error', e);
+      }
+    }
+
+    async function loadTopExpenses() {
+      try {
+        const res = await SSJ.apiRequest(`/statistics/top-expenses?year=${currentYear}&month=${currentMonth}&limit=5`, 'GET');
+        if (!res.success || !res.data) return;
+        renderTop5((res.data.data || res.data).items);
+      } catch (e) {
+        console.error('topExpenses error', e);
+      }
+    }
+
+    async function loadMonthlyTrend() {
+      try {
+        const res = await SSJ.apiRequest(`/statistics/monthly-trend?year=${currentYear}`, 'GET');
+        if (!res.success || !res.data) return;
+        const monthsData = (res.data.data || res.data).months;
+        if (!monthsData) return;
+        document.getElementById('trendSubtitle').textContent = `${currentYear}年每月收支趋势`;
+        renderLineChart(monthsData);
+      } catch (e) {
+        console.error('monthlyTrend error', e);
+      }
+    }
+
+    // ==================== Render Functions ====================
+    function renderPieLegend(categories, total) {
+      const container = document.getElementById('pieLegend');
+      if (!categories || categories.length === 0) {
+        container.innerHTML = '<div class="text-text-muted text-body-sm">暂无数据</div>';
+        return;
+      }
+      container.innerHTML = categories.map(c => `
+        <div class="flex items-center justify-between group cursor-default">
+          <div class="flex items-center gap-sm">
+            <span class="w-3 h-3 rounded-full" style="background-color:${c.category_color}"></span>
+            <span class="font-body-md text-body-md">${c.category_name}</span>
+          </div>
+          <div class="text-right">
+            <span class="font-number-md text-number-md">${formatMoney(c.amount)}</span>
+            <span class="ml-sm text-text-muted font-label-sm text-label-sm">${c.percentage}%</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderPieChart(categories, total) {
+      if (!pieChartInstance) {
+        pieChartInstance = echarts.init(document.getElementById('pieChart'));
+      }
+      if (!categories || categories.length === 0) {
+        pieChartInstance.clear();
+        pieChartInstance.setOption({
+          title: { text: '暂无数据', left: 'center', top: 'center', textStyle: { fontSize: 14, color: '#9ca3af' } },
+          series: [{ data: [] }]
+        });
+        return;
+      }
+      pieChartInstance.setOption({
+        title: { show: false },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c} ({d}%)'
+        },
+        series: [{
+          type: 'pie',
+          radius: ['45%', '70%'],
+          center: ['50%', '50%'],
+          avoidLabelOverlap: false,
+          itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+          label: { show: false },
+          emphasis: { label: { show: false } },
+          data: categories.map(c => ({
+            value: c.amount,
+            name: c.category_name,
+            itemStyle: { color: c.category_color }
+          }))
+        }],
+        graphic: [{
+          type: 'text',
+          left: 'center',
+          top: 'center',
+          style: {
+            text: '总支出\n' + formatMoneyShort(total),
+            textAlign: 'center',
+            fill: '#6b7280',
+            fontSize: 12,
+            fontFamily: 'Inter, sans-serif'
+          }
+        }]
+      });
+    }
+
+    function renderLineChart(months) {
+      if (!lineChartInstance) {
+        lineChartInstance = echarts.init(document.getElementById('lineChart'));
+        window.addEventListener('resize', () => lineChartInstance && lineChartInstance.resize());
+      }
+      const expenseData = months.map(m => Number(m.expense));
+      const incomeData = months.map(m => Number(m.income));
+      lineChartInstance.setOption({
+        tooltip: {
+          trigger: 'axis',
+          formatter: function (params) {
+            let html = params[0].name + '月<br/>';
+            params.forEach(p => {
+              html += '<span style="display:inline-block;margin-right:4px;border-radius:50%;width:10px;height:10px;background-color:' + p.color + '"></span>' + p.seriesName + ': ' + formatMoney(p.value) + '<br/>';
+            });
+            return html;
+          }
+        },
+        legend: { show: false },
+        grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: months.map((_, i) => i + 1 + '月'),
+          axisLine: { lineStyle: { color: '#e5e7eb' } },
+          axisLabel: { color: '#6b7280', fontSize: 11 }
+        },
+        yAxis: {
+          type: 'value',
+          axisLine: { show: false },
+          axisLabel: { color: '#6b7280', fontSize: 11, formatter: v => '¥' + v.toLocaleString() },
+          splitLine: { lineStyle: { color: '#f3f4f6' } }
+        },
+        series: [
+          {
+            name: '支出',
+            type: 'line',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            lineStyle: { color: '#ef4444', width: 2 },
+            itemStyle: { color: '#ef4444' },
+            areaStyle: { color: 'rgba(239,68,68,0.1)' },
+            data: expenseData
+          },
+          {
+            name: '收入',
+            type: 'line',
+            smooth: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            lineStyle: { color: '#3b82f6', width: 2 },
+            itemStyle: { color: '#3b82f6' },
+            areaStyle: { color: 'rgba(59,130,246,0.1)' },
+            data: incomeData
+          }
+        ]
+      });
+    }
+
+    function renderTop5(items) {
+      const container = document.getElementById('top5Container');
+      if (!items || items.length === 0) {
+        container.innerHTML = '<div class="text-text-muted text-body-sm">暂无数据</div>';
+        return;
+      }
+      const maxAmount = Number(items[0].amount);
+      container.innerHTML = items.map((item, i) => `
+        <div class="flex items-center gap-md">
+          <span class="font-bold ${i === 0 ? 'text-primary' : 'text-text-muted'} italic w-4">${item.rank}</span>
+          <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+            <span class="material-symbols-outlined">${item.category_icon || 'more_horiz'}</span>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-label-md text-label-md">${item.note || item.category_name}</span>
+              <span class="font-number-md text-number-md">${formatMoney(item.amount)}</span>
+            </div>
+            <div class="w-full bg-surface-variant h-1.5 rounded-full">
+              <div class="h-full rounded-full ${i === 0 ? 'bg-primary' : 'bg-surface-container-high'}" style="width: ${item.bar_width}%;"></div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ==================== Init ====================
+    window.addEventListener('load', () => {
+      updateHeaderButtons();
+      loadAllData();
     });
   </script>
 </body>
