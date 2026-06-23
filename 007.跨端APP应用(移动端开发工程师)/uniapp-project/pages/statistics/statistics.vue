@@ -5,7 +5,7 @@
       <view class="nav-center">
         <picker mode="date" fields="month" :value="pickerDate" @change="onDateChange">
           <view class="date-picker">
-            <text class="period-label">{{ year }}年{{ month }}月</text>
+            <text class="period-label">{{ year }}年{{ formatMonth(currentMonth) }}月</text>
           </view>
         </picker>
       </view>
@@ -20,11 +20,11 @@
         <!-- 年度汇总卡片 -->
         <view class="summary-cards" v-if="yearlySummary">
           <view class="summary-card card">
-            <text class="card-label">年度支出</text>
+            <text class="card-label">本月支出</text>
             <text class="card-amount expense">¥{{ formatMoney(yearlySummary.total_expense) }}</text>
           </view>
           <view class="summary-card card">
-            <text class="card-label">年度收入</text>
+            <text class="card-label">本月收入</text>
             <text class="card-amount income">¥{{ formatMoney(yearlySummary.total_income) }}</text>
           </view>
           <view class="summary-card card wide">
@@ -40,8 +40,8 @@
           <text class="chart-title">支出构成</text>
           <view class="chart-area">
             <view class="pie-container">
-              <canvas canvas-id="pieChart" id="pieChart" class="pie-canvas"></canvas>
-              <view class="pie-center" v-if="pieTotal">
+              <canvas canvas-id="pieChart" class="pie-canvas" disable-scroll="true"></canvas>
+              <view class="pie-center" v-if="pieTotal > 0">
                 <text class="pie-total-label">总支出</text>
                 <text class="pie-total-value">¥{{ formatMoney(pieTotal) }}</text>
               </view>
@@ -62,7 +62,7 @@
         </view>
 
         <!-- 支出 Top5 列表 -->
-        <view class="chart-card card" v-if="topExpenses.length">
+        <view class="chart-card card" v-if="topExpenses.length > 0">
           <text class="chart-title">支出排行 Top5</text>
           <view
             v-for="(item, idx) in topExpenses"
@@ -82,7 +82,7 @@
         <!-- 每月趋势折线图 -->
         <view class="chart-card card">
           <text class="chart-title">每月收支趋势</text>
-          <canvas canvas-id="lineChart" id="lineChart" class="line-canvas"></canvas>
+          <canvas canvas-id="lineChart" class="line-canvas" disable-scroll="true"></canvas>
         </view>
       </view>
     </scroll-view>
@@ -115,7 +115,7 @@ export default {
   },
   methods: {
     onDateChange(e) {
-      const date = e.detail.value // format: YYYY-MM
+      const date = e.detail.value
       const [y, m] = date.split('-')
       this.year = parseInt(y)
       this.currentMonth = parseInt(m)
@@ -133,9 +133,9 @@ export default {
         ])
 
         // Handle yearly summary
-        if (summaryRes && summaryRes.success) {
+        if (summaryRes && summaryRes.success && summaryRes.data) {
           const d = summaryRes.data
-          if (d && d.total_expense !== undefined) {
+          if (d.total_expense !== undefined) {
             this.yearlySummary = {
               total_expense: d.total_expense,
               total_income: d.total_income,
@@ -144,11 +144,11 @@ export default {
           }
         }
 
-        // Handle expense by category - API returns { data: { categories: [...] } }
-        if (categoryRes && categoryRes.success) {
+        // Handle expense by category
+        if (categoryRes && categoryRes.success && categoryRes.data) {
           const d = categoryRes.data
-          if (d && d.categories && Array.isArray(d.categories)) {
-            const total = d.total_expense || 0
+          if (d.categories && Array.isArray(d.categories)) {
+            const total = parseFloat(d.total_expense || 0)
             this.expenseData = d.categories.map(c => ({
               name: c.category_name || '其他',
               value: parseFloat(c.amount || 0),
@@ -156,14 +156,14 @@ export default {
               percent: c.percentage || 0,
               category: { id: c.category_id, name: c.category_name, icon: c.category_icon }
             }))
-            this.pieTotal = parseFloat(total)
+            this.pieTotal = total
           }
         }
 
-        // Handle top expenses - API returns { data: { items: [...] } }
-        if (topRes && topRes.success) {
+        // Handle top expenses
+        if (topRes && topRes.success && topRes.data) {
           const d = topRes.data
-          if (d && d.items && Array.isArray(d.items)) {
+          if (d.items && Array.isArray(d.items)) {
             this.topExpenses = d.items.map(item => ({
               id: item.id,
               amount: item.amount,
@@ -176,18 +176,19 @@ export default {
           }
         }
 
-        // Handle monthly trend - API returns { data: { months: [...] } }
-        if (trendRes && trendRes.success) {
+        // Handle monthly trend
+        if (trendRes && trendRes.success && trendRes.data) {
           const d = trendRes.data
-          if (d && d.months && Array.isArray(d.months)) {
+          if (d.months && Array.isArray(d.months)) {
             this.trendData = this.processTrend(d.months)
           }
         }
 
-        this.$nextTick(() => {
+        // Draw charts after data is loaded with a delay to ensure canvas is ready
+        setTimeout(() => {
           this.drawPie()
           this.drawLine()
-        })
+        }, 100)
       } catch (e) {
         console.error('Statistics load error:', e)
       } finally {
@@ -195,7 +196,6 @@ export default {
       }
     },
     processTrend(data) {
-      // Backend returns [{ month: 1, income: '0.00', expense: '0.00' }, ...]
       if (!Array.isArray(data)) data = []
       const months = []
       const expense = []
@@ -209,68 +209,150 @@ export default {
       return { months, expense, income }
     },
     drawPie() {
-      if (!this.expenseData.length) return
-      const ctx = uni.createCanvasContext('pieChart')
-      const W = 160
-      const H = 160
-      const cx = W / 2
-      const cy = H / 2
-      const r = Math.min(W, H) / 2 - 4
-      let startAngle = -Math.PI / 2
-      this.expenseData.forEach(item => {
-        const angle = (item.value / this.pieTotal) * Math.PI * 2
-        ctx.beginPath()
-        ctx.moveTo(cx, cy)
-        ctx.arc(cx, cy, r, startAngle, startAngle + angle)
-        ctx.closePath()
-        ctx.setFillStyle(item.color)
-        ctx.fill()
-        startAngle += angle
+      if (!this.expenseData.length || this.pieTotal <= 0) return
+
+      const query = uni.createSelectorQuery().in(this)
+      query.select('#pieChart').fields({ node: true, size: true }).exec((res) => {
+        if (!res[0] || !res[0].node) {
+          // Fallback: use older canvas API
+          this.drawPieOld()
+          return
+        }
+        const canvas = res[0].node
+        const ctx = canvas.getContext('2d')
+        const dpr = uni.getSystemInfoSync().pixelRatio || 2
+        canvas.width = res[0].width * dpr
+        canvas.height = res[0].height * dpr
+        ctx.scale(dpr, dpr)
+
+        const W = res[0].width
+        const H = res[0].height
+        const cx = W / 2
+        const cy = H / 2
+        const r = Math.min(W, H) / 2 - 4
+        let startAngle = -Math.PI / 2
+
+        this.expenseData.forEach(item => {
+          const angle = (item.value / this.pieTotal) * Math.PI * 2
+          ctx.beginPath()
+          ctx.moveTo(cx, cy)
+          ctx.arc(cx, cy, r, startAngle, startAngle + angle)
+          ctx.closePath()
+          ctx.setFillStyle(item.color)
+          ctx.fill()
+          startAngle += angle
+        })
       })
-      ctx.draw()
+    },
+    drawPieOld() {
+      try {
+        const ctx = uni.createCanvasContext('pieChart', this)
+        const W = 160
+        const H = 160
+        const cx = W / 2
+        const cy = H / 2
+        const r = Math.min(W, H) / 2 - 4
+        let startAngle = -Math.PI / 2
+
+        this.expenseData.forEach(item => {
+          const angle = (item.value / this.pieTotal) * Math.PI * 2
+          ctx.beginPath()
+          ctx.moveTo(cx, cy)
+          ctx.arc(cx, cy, r, startAngle, startAngle + angle)
+          ctx.closePath()
+          ctx.setFillStyle(item.color)
+          ctx.fill()
+          startAngle += angle
+        })
+        ctx.draw()
+      } catch (e) {
+        console.error('Pie draw error:', e)
+      }
     },
     drawLine() {
-      const ctx = uni.createCanvasContext('lineChart')
-      const W = uni.getSystemInfoSync().windowWidth - 60
-      const H = 200
-      const { months, expense, income } = this.trendData
-      const max = Math.max(...expense, ...income, 1)
-      const stepX = W / 11
-      const h = H - 20
+      try {
+        const ctx = uni.createCanvasContext('lineChart', this)
+        const sysInfo = uni.getSystemInfoSync()
+        const W = (sysInfo.windowWidth || 375) - 24 - 24
+        const H = 200
+        const { months, expense, income } = this.trendData
 
-      function drawLine(data, color) {
-        ctx.beginPath()
-        ctx.setStrokeStyle(color)
-        ctx.setLineWidth(2)
-        data.forEach((v, i) => {
-          const x = i * stepX + stepX / 2
-          const y = h - (v / max) * (h - 20)
-          if (i === 0) ctx.moveTo(x, y)
-          else ctx.lineTo(x, y)
-        })
-        ctx.stroke()
+        // Check if there's data
+        const hasExpense = expense.some(v => v > 0)
+        const hasIncome = income.some(v => v > 0)
+        if (!hasExpense && !hasIncome) return
 
-        data.forEach((v, i) => {
-          const x = i * stepX + stepX / 2
-          const y = h - (v / max) * (h - 20)
+        const max = Math.max(...expense, ...income, 1)
+        const stepX = W / 11
+        const h = H - 20
+
+        // Draw expense line (red)
+        if (hasExpense) {
           ctx.beginPath()
-          ctx.arc(x, y, 3, 0, Math.PI * 2)
-          ctx.setFillStyle(color)
-          ctx.fill()
-        })
-      }
+          ctx.setStrokeStyle('#ef4444')
+          ctx.setLineWidth(2)
+          expense.forEach((v, i) => {
+            const x = i * stepX + stepX / 2
+            const y = h - (v / max) * (h - 20)
+            if (i === 0) {
+              ctx.moveTo(x, y)
+            } else {
+              ctx.lineTo(x, y)
+            }
+          })
+          ctx.stroke()
 
-      ctx.drawLine = drawLine
-      ctx.clearRect(0, 0, W, H)
-      drawLine(expense, '#ef4444')
-      drawLine(income, '#3b82f6')
-      ctx.draw()
+          // Draw dots for expense
+          expense.forEach((v, i) => {
+            const x = i * stepX + stepX / 2
+            const y = h - (v / max) * (h - 20)
+            ctx.beginPath()
+            ctx.arc(x, y, 3, 0, Math.PI * 2)
+            ctx.setFillStyle('#ef4444')
+            ctx.fill()
+          })
+        }
+
+        // Draw income line (blue)
+        if (hasIncome) {
+          ctx.beginPath()
+          ctx.setStrokeStyle('#3b82f6')
+          ctx.setLineWidth(2)
+          income.forEach((v, i) => {
+            const x = i * stepX + stepX / 2
+            const y = h - (v / max) * (h - 20)
+            if (i === 0) {
+              ctx.moveTo(x, y)
+            } else {
+              ctx.lineTo(x, y)
+            }
+          })
+          ctx.stroke()
+
+          // Draw dots for income
+          income.forEach((v, i) => {
+            const x = i * stepX + stepX / 2
+            const y = h - (v / max) * (h - 20)
+            ctx.beginPath()
+            ctx.arc(x, y, 3, 0, Math.PI * 2)
+            ctx.setFillStyle('#3b82f6')
+            ctx.fill()
+          })
+        }
+
+        ctx.draw()
+      } catch (e) {
+        console.error('Line draw error:', e)
+      }
     },
     formatMoney(val) {
       return parseFloat(val || 0).toLocaleString('zh-CN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       })
+    },
+    formatMonth(month) {
+      return String(month)
     },
     getIconEmoji(icon) {
       const map = {

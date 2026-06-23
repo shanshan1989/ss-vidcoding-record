@@ -35,6 +35,7 @@
               v-model="budgetInput"
               type="digit"
               placeholder="输入预算金额"
+              adjust-position
             />
             <text class="confirm-btn" @click="saveBudgetFn">保存</text>
             <text class="cancel-btn" @click="cancelBudget">取消</text>
@@ -49,7 +50,7 @@
         </view>
         <view class="budget-stats" v-if="Number(budgetInfo.budget_amount) > 0">
           <text>已使用 ¥{{ formatMoney(budgetInfo.used_amount) }}</text>
-          <text>剩余 ¥{{ formatMoney(budgetInfo.remaining || '0') }}</text>
+          <text>剩余 ¥{{ formatMoney(budgetInfo.remaining_amount || '0') }}</text>
         </view>
       </view>
     </view>
@@ -105,19 +106,30 @@
 
         <view class="form-item">
           <text class="label">账户名称</text>
-          <input class="input" v-model="accountForm.name" placeholder="如：微信钱包" />
+          <input
+            class="modal-input"
+            v-model="accountForm.name"
+            placeholder="如：微信钱包"
+            adjust-position
+          />
         </view>
 
         <view class="form-item">
           <text class="label">账户类型</text>
           <picker :value="accountTypeIndex" :range="accountTypes" @change="onAccountTypeChange">
-            <view class="input picker-value">{{ accountForm.type }}</view>
+            <view class="modal-input picker-value">{{ accountForm.type }}</view>
           </picker>
         </view>
 
         <view class="form-item">
           <text class="label">当前余额</text>
-          <input class="input" v-model="accountForm.current_balance" type="digit" placeholder="0.00" />
+          <input
+            class="modal-input"
+            v-model="accountForm.current_balance"
+            type="digit"
+            placeholder="0.00"
+            adjust-position
+          />
         </view>
 
         <view class="modal-actions">
@@ -347,11 +359,6 @@ export default {
   color: #9ca3af;
 }
 
-.arrow-icon {
-  font-size: 22px;
-  color: #9ca3af;
-}
-
 .edit-profile-btn {
   font-size: 14px;
   font-weight: 600;
@@ -520,37 +527,6 @@ export default {
   color: #191c1a;
 }
 
-.setting-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 0;
-  border-bottom: 1px solid #f0f7f3;
-}
-
-.setting-item:last-child { border-bottom: none; }
-
-.setting-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.setting-icon { font-size: 22px; color: #6c7972; }
-
-.setting-label {
-  font-size: 14px;
-  color: #191c1a;
-}
-
-.picker-display {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 14px;
-  color: #6c7972;
-}
-
 .btn-logout {
   width: 100%;
   height: 48px;
@@ -590,24 +566,46 @@ export default {
   margin-bottom: 20px;
 }
 
-.form-item { margin-bottom: 14px; }
+.form-item { margin-bottom: 16px; }
 
 .label {
   font-size: 12px;
   font-weight: 600;
   color: #6c7972;
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.modal-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #d1ddd6;
+  border-radius: 12px;
+  font-size: 16px;
+  background: #ffffff;
+  color: #191c1a;
+}
+
+.modal-input:focus {
+  border-color: #006c49;
+  box-shadow: 0 0 0 2px rgba(0,108,73,0.1);
+}
+
+.modal-input::placeholder {
+  color: #9ca3af;
 }
 
 .picker-value {
-  height: 40px;
-  padding: 0 12px;
+  height: 48px;
+  padding: 0 16px;
   border: 1px solid #d1ddd6;
-  border-radius: 8px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 16px;
+  color: #191c1a;
+  background: #ffffff;
 }
 
 .modal-actions {
@@ -618,9 +616,9 @@ export default {
 
 .btn-outline, .btn-primary {
   flex: 1;
-  height: 44px;
-  border-radius: 10px;
-  font-size: 14px;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -631,10 +629,10 @@ export default {
 .btn-outline { background: #f0f7f3; color: #006c49; }
 .btn-primary { background: #006c49; color: #fff; }
 
-.delete-area { margin-top: 12px; text-align: center; }
+.delete-area { margin-top: 16px; text-align: center; }
 
 .btn-danger-text {
-  font-size: 13px;
+  font-size: 14px;
   color: #ef4444;
 }
 
@@ -642,6 +640,6 @@ export default {
   text-align: center;
   padding: 20px;
   color: #9ca3af;
-  font-size: 13px;
+  font-size: 14px;
 }
 </style>
