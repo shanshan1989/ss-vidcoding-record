@@ -45,7 +45,7 @@ window.SSJ = {
   // 登出
   logout() {
     this.clearAdminSession();
-    window.location.href = './login.html';
+    window.location.href = '../login.html';
   },
 
   // API 请求核心方法
