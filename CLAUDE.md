@@ -4,143 +4,251 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 项目概述
 
-随手记账是一个轻量级个人记账工具（V1.0.1），包含前端页面、后端 API 和 MySQL 数据库。
+本仓库包含两个独立项目，共用同一个 MySQL 数据库：
+
+| 项目 | 用途 | 前端端口 | 后端端口 |
+|------|------|---------|---------|
+| `003.前端代码(前端工程师)` | 随手记账用户端（用户注册、记账） | 8080 | 3000 |
+| `006.后台管理系统(运营专员)` | 随手记账户后台（运营查看数据） | 8081 | 3001 |
+
+---
 
 ## 运行命令
 
-### 前端开发服务器
+### 用户端 - 前端
 ```bash
 cd "003.前端代码(前端工程师)/frontend"
 python3 -m http.server 8080
 ```
 
-### 后端启动
+### 用户端 - 后端
 ```bash
 cd "003.前端代码(前端工程师)/backend"
-npm install    # 首次安装依赖
-npm start      # 启动服务 (http://localhost:3000)
+npm install
+npm start      # http://localhost:3000
 ```
 
-### 数据库连接
+### 后台管理 - 前端
 ```bash
-# MySQL Docker 容器
+cd "006.后台管理系统(运营专员)/frontend"
+python3 -m http.server 8081
+```
+
+### 后台管理 - 后端
+```bash
+cd "006.后台管理系统(运营专员)/backend"
+npm install
+npm start      # http://localhost:3001
+```
+
+### 数据库
+```bash
+# 连接 MySQL Docker 容器
 docker exec -it mysql9 mysql --default-character-set=utf8mb4 -uroot -p123456 suishouji
 
 # 重新初始化数据库
 docker exec -i mysql9 mysql --default-character-set=utf8mb4 -uroot -p123456 < "004.数据库管理(数据库管理员)/init_database.sql"
 ```
 
+---
+
 ## 技术栈
 
-- **前端**: HTML5 + CSS3 + JavaScript（ES6+），Tailwind CSS（CDN），Material Symbols Outlined 图标，ECharts 5（统计页面）
-- **后端**: Node.js + Express，mysql2（连接池），bcryptjs（密码加密）
-- **数据库**: MySQL 9.7，utf8mb4 字符集
+| 层 | 用户端 | 后台管理 |
+|----|--------|---------|
+| 前端 | HTML5 + CSS3 + JavaScript，Tailwind CSS（CDN），ECharts 5，Material Symbols | 同用户端 |
+| 后端 | Node.js + Express，mysql2（连接池），bcryptjs，uuid，dotenv | Node.js + Express，mysql2，bcryptjs，express-session，uuid，dotenv |
+| 数据库 | MySQL 9，utf8mb4 | 同用户端（另有 `admin_users` 表） |
+
+---
 
 ## 项目结构
 
 ```
-003.前端代码(前端工程师)/
-├── frontend/                  # 前端页面
-│   ├── index.html             # 登录页
-│   ├── pages/                 # 业务页面（home/transactions/statistics/settings 等）
+003.前端代码(前端工程师)/         # 用户端
+├── frontend/
+│   ├── index.html              # 登录页
+│   ├── pages/                  # home / transactions / statistics / settings 等
 │   └── assets/js/
-│       ├── shared.js         # SSJ 全局对象（apiRequest/isLoggedIn/getUserSession 等）
-│       ├── auth.js           # SSJAuth 对象（登录注册交互、showToast）
-│       ├── categories-data.js # 分类数据
-│       └── keypad.js         # 首页数字键盘
-└── backend/                   # 后端 API
-    └── src/
-        ├── app.js            # Express 主入口
-        ├── config/db.js      # MySQL 连接池
-        ├── middleware/auth.js # 鉴权中间件（Bearer userId）
-        ├── routes/           # 路由定义
-        ├── controllers/      # 业务逻辑
-        └── models/           # 数据库操作
+│       ├── shared.js           # SSJ 全局对象
+│       ├── auth.js             # SSJAuth 对象（Toast / Overlay / PasswordToggle）
+│       └── ...
+└── backend/src/
+    ├── app.js                  # Express 主入口（端口3000）
+    ├── config/db.js            # MySQL 连接池
+    ├── middleware/auth.js       # Bearer {userId} 鉴权中间件
+    ├── routes/ / controllers/ / models/
+
+006.后台管理系统(运营专员)/        # 后台管理（独立项目）
+├── frontend/
+│   ├── login.html              # 管理员登录页
+│   ├── pages/                  # dashboard / users / transactions / accounts / budgets / statistics/
+│   └── assets/js/
+│       ├── shared.js           # SSJ 对象（X-Admin-Id 鉴权）
+│       └── auth.js            # SSJAdmin 对象
+└── backend/src/
+    ├── app.js                  # Express 主入口（端口3001）
+    ├── config/db.js
+    ├── middleware/adminAuth.js # Session + X-Admin-Id 双重鉴权
+    └── routes/ / controllers/ / models/
 
 004.数据库管理(数据库管理员)/
-├── init_database.sql         # 数据库初始化脚本
+├── init_database.sql           # 数据库初始化脚本
 └── 随手记账数据库设计.md
 ```
 
-## 前端架构模式
+---
 
-### 页面初始化
-各页面使用 IIFE 封装逻辑，在 `DOMContentLoaded` 中初始化：
-```javascript
-document.addEventListener('DOMContentLoaded', () => {
-  if (!SSJ.isLoggedIn()) {
-    window.location.href = '../index.html';
-    return;
-  }
-  // 初始化逻辑...
-});
+## 核心架构要点
+
+### 认证机制（两个系统不同）
+
+**用户端**：Bearer Token 模式
+- 登录后返回 `{id, username, nickname}`，存于 `localStorage` 的 `ssj_user_session`
+- 后续请求 Header：`Authorization: Bearer {userId}`
+- 中间件：`middleware/auth.js` 从 Header 提取 userId
+
+**后台管理**：Session + X-Admin-Id 备用
+- 登录后写入 `express-session` Cookie（`connect.sid`）+ `sessionStorage` 的 `ssj_admin_session`
+- 跨域开发时（前端 127.0.0.1:5500/8080 vs 后端 localhost:3001）Cookie 的 `SameSite=Lax` 会阻止跨端口发送，因此额外支持 `X-Admin-Id` 请求头
+- 中间件：`middleware/adminAuth.js` 优先读 session，回退读 `X-Admin-Id` 头
+
+### mysql2 LIMIT/OFFSET 参数限制
+`mysql2` prepared statements 不支持 `LIMIT ? OFFSET ?` 绑定参数，必须直接拼接整型：
+```sql
+-- 错误（参数绑定会失败）
+LIMIT ? OFFSET ?
+
+-- 正确（直接拼接整型）
+LIMIT ' + Number(limit) + ' OFFSET ' + Number(offset)
+```
+涉及所有分页查询（users / accounts / transactions / budgets / recentUsers 等）
+
+### budgets 表 year_month 字段
+`year_month` 是 MySQL 保留字，所有 SQL 必须使用反引号：
+```sql
+WHERE `year_month` = ?
 ```
 
-### 全局对象
-- **SSJ** (`shared.js`): `apiRequest`、`isLoggedIn()`、`getUserSession()`、`logout()`、`toggleDarkMode()`
-- **SSJAuth** (`auth.js`): `showToast(message, isError)`、`showOverlay`/`hideOverlay`、`togglePassword`
+### transactions 软删除
+所有账单查询必须过滤 `is_deleted = 0`，删除时使用软删除（`UPDATE ... SET is_deleted = 1`）
 
-### localStorage 键名
-| 键名 | 用途 |
-|------|------|
-| `ssj_user_session` | 用户会话 JSON（含 `id`、`username`、`nickname`） |
-| `ssj_new_user` | 新用户首次登录引导标志（注册后设置，首页读取后清除） |
-| `ssj-theme` | 主题偏好（`dark`/`light`） |
+### 账户余额自动维护
+创建账单时，后端自动更新 `accounts.current_balance`（收入 +，支出 -）
 
-## 后端 API
-
-所有私有接口需 `Authorization: Bearer {userId}` 请求头。
-
-| 接口 | 方法 | 说明 |
-|-----|------|------|
-| `/api/auth/register` | POST | 用户注册 |
-| `/api/auth/login` | POST | 用户登录 |
-| `/api/health` | GET | 健康检查 |
-| `/api/users/me` | GET/PUT | 获取/更新用户资料 |
-| `/api/home/summary` | GET | 首页汇总（余额、月收入、月支出） |
-| `/api/home/budget` | GET | 首页预算进度 |
-| `/api/categories` | GET/POST | 分类列表/创建 |
-| `/api/categories/:id` | PUT/DELETE | 更新/删除分类 |
-| `/api/transactions/recent` | GET | 最近交易 |
-| `/api/transactions` | POST | 创建交易 |
-| `/api/transactions/:id` | DELETE | 删除交易 |
-| `/api/accounts` | GET/POST | 账户列表/创建 |
-| `/api/accounts/:id` | PUT/DELETE | 更新/删除账户 |
-| `/api/budgets` | GET/POST | 预算查询/创建（含 `year_month` 反引号注意） |
-| `/api/budgets/:id` | PUT/DELETE | 更新/删除预算 |
-| `/api/statistics/yearly-summary` | GET | 收支汇总 |
-| `/api/statistics/expense-by-category` | GET | 按分类支出 |
-| `/api/statistics/monthly-trend` | GET | 每月趋势 |
-
-### API 响应格式
-后端返回 `{ success: true, data: {...} }`；`SSJ.apiRequest` 包装为 `{ success, data, status }`，取值注意兼容 `res.data.data` 或 `res.data`。
+---
 
 ## 数据库
 
-- `users` — nickname、avatar_url（MEDIUMTEXT）、signature、currency
-- `categories` — 系统内置（`is_system=1`）+ 用户自定义
-- `accounts` — 账户表，type: cash/electronic/bank/credit/other
-- `transactions` — 账单，type: expense/income/transfer
-- `budgets` — 月度预算，`year_month` 格式 YYYY-MM（MySQL 保留字，需反引号）
-- `reminders`、`backups`
+### 业务表（8张，用户端使用）
 
-## 开发注意事项
+| 表名 | 说明 |
+|------|------|
+| `users` | 用户账户，is_active=1 正常，0=禁用 |
+| `categories` | 分类，is_system=1 为系统内置，user_id=NULL |
+| `accounts` | 账户，type: cash/electronic/bank/credit/other |
+| `transactions` | 账单，type: expense/income/transfer，is_deleted=0 未删除 |
+| `budgets` | 月度预算，`year_month` 格式 YYYY-MM，category_id=NULL 为总预算 |
+| `reminders` | 每日提醒设置 |
+| `backups` | 备份记录 |
+| `admin_users` | 管理员账户（后台管理系统专用，唯一新增的表） |
 
-### 添加新 API 端点
-1. 在 `routes/` 创建路由文件，引入 `authenticate` 中间件
-2. 在 `controllers/` 创建控制器
-3. 在 `models/` 创建数据模型
-4. 在 `app.js` 中 require 并 app.use 注册
+### admin_users 表结构
+| 字段 | 说明 |
+|------|------|
+| id | VARCHAR(36) PK |
+| username | VARCHAR(50) UNIQUE NOT NULL |
+| password_hash | VARCHAR(255)（bcrypt） |
+| nickname | VARCHAR(50) |
+| is_active | TINYINT(1) 默认1 |
+| created_at / updated_at | DATETIME |
 
-### 前端页面权限控制
+---
+
+## 前端架构模式
+
+### 页面权限控制
 ```javascript
-if (!SSJ.isLoggedIn()) {
-  window.location.href = '../index.html';
-}
+document.addEventListener('DOMContentLoaded', () => {
+  if (!SSJ.isLoggedIn()) {
+    window.location.href = '../login.html'; // 或 '../index.html'（用户端）
+    return;
+  }
+});
 ```
 
-### 环境变量
-后端 `.env`（不在 git）：
+### localStorage / sessionStorage 键名
+| 键名 | 存储位置 | 用途 |
+|------|---------|------|
+| `ssj_user_session` | localStorage（用户端） | 用户会话 `{id, username, nickname}` |
+| `ssj_admin_session` | sessionStorage（后台） | 管理员会话 |
+| `ssj_new_user` | localStorage | 新用户引导标志 |
+| `ssj-theme` | localStorage | 主题 dark/light |
+
+### API 请求封装
+```javascript
+// 用户端
+const result = await SSJ.apiRequest('/transactions', 'POST', body);
+
+// 后台管理
+const result = await SSJ.apiRequest('/users', 'GET');
+// 内部自动附加 X-Admin-Id 头
+```
+响应格式：`{ success, data, status }`，数据取 `result.data?.data ?? result.data`
+
+### API 响应格式
+后端统一 `{ success: true, data: {...} }` 或 `{ success: false, message: "..." }`
+
+---
+
+## 后端路由概览
+
+### 用户端（端口 3000，前缀 `/api`）
+
+| 接口 | 方法 | 鉴权 | 说明 |
+|------|------|------|------|
+| `/api/auth/register` | POST | 否 | 注册 |
+| `/api/auth/login` | POST | 否 | 登录 |
+| `/api/health` | GET | 否 | 健康检查 |
+| `/api/home/summary` | GET | Bearer | 首页汇总 |
+| `/api/home/budget` | GET | Bearer | 预算进度 |
+| `/api/categories` | GET/POST | Bearer | 分类 |
+| `/api/transactions` | POST | Bearer | 创建账单 |
+| `/api/transactions/list` | GET | Bearer | 账单列表 |
+| `/api/accounts` | GET/POST | Bearer | 账户 |
+| `/api/budgets` | GET/POST | Bearer | 预算 |
+| `/api/statistics/*` | GET | Bearer | 统计图表 |
+| `/api/users/me` | GET/PUT | Bearer | 用户资料 |
+
+### 后台管理（端口 3001，前缀 `/api/admin`）
+
+| 接口 | 方法 | 鉴权 | 说明 |
+|------|------|------|------|
+| `/api/admin/auth/login` | POST | 否 | 管理员登录 |
+| `/api/admin/auth/logout` | POST | 是 | 登出 |
+| `/api/admin/auth/me` | GET | 是 | 当前管理员信息 |
+| `/api/admin/dashboard/summary` | GET | 是 | 核心指标 |
+| `/api/admin/dashboard/user-trend` | GET | 是 | 30天用户趋势 |
+| `/api/admin/dashboard/transaction-trend` | GET | 是 | 30天收支趋势 |
+| `/api/admin/dashboard/recent-users` | GET | 是 | 最近注册用户 |
+| `/api/admin/users` | GET | 是 | 用户列表（筛选/分页） |
+| `/api/admin/users/:id` | GET | 是 | 用户详情 |
+| `/api/admin/transactions` | GET | 是 | 账单列表（多维筛选） |
+| `/api/admin/transactions/:id` | GET | 是 | 账单详情 |
+| `/api/admin/accounts` | GET | 是 | 账户列表 |
+| `/api/admin/accounts/:id` | GET | 是 | 账户详情 |
+| `/api/admin/budgets` | GET | 是 | 预算列表 |
+| `/api/admin/statistics/overview` | GET | 是 | 累计收支概览 |
+| `/api/admin/statistics/expense-breakdown` | GET | 是 | 支出分类占比 |
+| `/api/admin/statistics/income-breakdown` | GET | 是 | 收入分类占比 |
+| `/api/admin/statistics/user-ranking` | GET | 是 | 用户消费排行 |
+| `/api/admin/categories` | GET | 是 | 分类列表（供筛选下拉） |
+
+---
+
+## 环境变量
+
+### 用户端后端 `.env`
 ```
 DB_HOST=localhost
 DB_PORT=3306
@@ -150,10 +258,29 @@ DB_NAME=suishouji
 PORT=3000
 ```
 
-### 其他
-- Express JSON 请求体限制 `10mb`（支持头像 Base64 上传）
-- `budgets` 表查询时 `year_month` 字段需用反引号包裹
+### 后台管理后端 `.env`
+```
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=123456
+DB_NAME=suishouji
+PORT=3001
+SESSION_SECRET=your_secret_here
+```
+
+---
+
+## 添加新后端接口
+
+1. 在 `routes/` 创建路由文件，require 中间件 `adminAuth`（后台）或 `authenticate`（用户端）
+2. 在 `controllers/` 创建控制器（静态方法类）
+3. 在 `models/` 创建数据模型（所有 SQL 使用 `pool.execute`，参数绑定）
+4. 在 `app.js` 中 `require` 并 `app.use` 注册
+
+---
 
 ## 相关文档
 - [001.产品PRD/财务记账产品需求文档.md](001.产品PRD/财务记账产品需求文档.md)
+- [001.产品PRD/后台管理系统功能规格.md](001.产品PRD/后台管理系统功能规格.md)
 - [004.数据库管理(数据库管理员)/随手记账数据库设计.md](004.数据库管理(数据库管理员)/随手记账数据库设计.md)
