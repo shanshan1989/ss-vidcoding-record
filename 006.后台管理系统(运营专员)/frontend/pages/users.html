@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户管理 - 随手记账后台管理系统</title>
+  <script src="../assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="bg-surface">
+
+  <header class="sticky top-0 z-50 bg-white border-b border-border-light">
+    <div class="flex items-center justify-between px-6 h-16">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-lg">admin_panel_settings</span>
+        </div>
+        <div>
+          <h1 class="font-headline-md font-bold text-primary">随手记账</h1>
+          <p class="text-label-sm text-secondary">后台管理系统</p>
+        </div>
+      </div>
+      <button onclick="SSJ.logout()" class="flex items-center gap-1 text-sm text-secondary hover:text-primary transition">
+        <span class="material-symbols-outlined text-lg">logout</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- 侧边栏 -->
+    <aside class="hidden md:flex flex-col w-60 fixed left-0 top-16 bottom-0 bg-white border-r border-border-light p-4 gap-1">
+      <nav class="flex flex-col gap-1">
+        <a href="./dashboard.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">dashboard</span> 仪表盘
+        </a>
+        <a href="./users.html" class="sidebar-nav-item active">
+          <span class="material-symbols-outlined text-xl">group</span> 用户管理
+        </a>
+        <a href="./transactions.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">receipt_long</span> 账单管理
+        </a>
+        <a href="./statistics/overview.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">bar_chart</span> 收入支出分析
+        </a>
+        <a href="./accounts.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">account_balance_wallet</span> 账户管理
+        </a>
+        <a href="./budgets.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">savings</span> 预算管理
+        </a>
+      </nav>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="flex-1 md:ml-60 p-6">
+      <div class="mb-6">
+        <h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">用户管理</h2>
+        <p class="text-sm text-secondary mt-1">查看所有注册用户</p>
+      </div>
+
+      <!-- 筛选栏 -->
+      <div class="bg-white rounded-xl border border-border-light p-4 mb-6 shadow-card">
+        <form id="filterForm" class="flex flex-wrap gap-4 items-end">
+          <div>
+            <label class="block text-xs font-semibold text-secondary mb-1">用户名搜索</label>
+            <input type="text" id="searchUsername" placeholder="模糊搜索" class="px-3 py-2 border border-border rounded-lg text-sm w-40 focus:outline-none focus:ring-1 focus:ring-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-secondary mb-1">注册日期起</label>
+            <input type="date" id="startDate" class="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-secondary mb-1">注册日期止</label>
+            <input type="date" id="endDate" class="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-secondary mb-1">账户状态</label>
+            <select id="statusFilter" class="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+              <option value="all">全部</option>
+              <option value="1">正常</option>
+              <option value="0">已禁用</option>
+            </select>
+          </div>
+          <div>
+            <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-hover transition">查询</button>
+            <button type="button" onclick="resetFilters()" class="px-4 py-2 border border-border rounded-lg text-sm ml-2 hover:bg-surface-container transition">重置</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- 表格 -->
+      <div class="bg-white rounded-xl border border-border-light shadow-card overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>用户ID</th>
+                <th>用户名</th>
+                <th>昵称</th>
+                <th>注册时间</th>
+                <th>最后登录</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
+        </div>
+        <!-- 分页 -->
+        <div class="flex items-center justify-between px-4 py-3 border-t border-border-light bg-surface-container">
+          <span class="text-sm text-secondary" id="totalText"></span>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 禁用确认弹窗 -->
+  <div id="disableModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+    <div class="bg-white rounded-xl p-6 shadow-dropdown" style="min-width:320px;">
+      <h3 class="font-headline-md font-bold mb-2">确认禁用</h3>
+      <p class="text-sm text-secondary mb-4">确定要禁用该用户吗？禁用后用户将无法登录，但数据保留。</p>
+      <div class="flex gap-3 justify-end">
+        <button onclick="closeDisableModal()" class="px-4 py-2 border border-border rounded-lg text-sm">取消</button>
+        <button onclick="confirmDisable()" class="px-4 py-2 bg-alert-red text-white rounded-lg text-sm font-semibold">确认禁用</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/shared.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    let currentPage = 1, pageSize = 20;
+    let currentFilters = {};
+    let pendingDisableId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!SSJ.isLoggedIn()) { window.location.href = '../login.html'; return; }
+      loadUsers();
+      document.getElementById('filterForm').addEventListener('submit', e => {
+        e.preventDefault();
+        applyFilters();
+      });
+    });
+
+    function applyFilters() {
+      currentFilters = {
+        username: document.getElementById('searchUsername').value.trim(),
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value,
+        status: document.getElementById('statusFilter').value
+      };
+      currentPage = 1;
+      loadUsers();
+    }
+
+    function resetFilters() {
+      document.getElementById('searchUsername').value = '';
+      document.getElementById('startDate').value = '';
+      document.getElementById('endDate').value = '';
+      document.getElementById('statusFilter').value = 'all';
+      currentFilters = {};
+      currentPage = 1;
+      loadUsers();
+    }
+
+    async function loadUsers() {
+      const params = { page: currentPage, pageSize, ...currentFilters };
+      const query = new URLSearchParams(p => Object.entries(p).forEach(([k,v]) => v && params[k] !== undefined && delete params[k]), params);
+      Object.entries(currentFilters).forEach(([k,v]) => v && query.append(k, v));
+      const result = await SSJ.apiRequest('/users?' + query.toString());
+      if (result.success && result.data.success) {
+        renderTable(result.data.data);
+      } else {
+        SSJAdmin.showToast('加载失败', true);
+      }
+    }
+
+    function renderTable(data) {
+      const { list, total, page, pageSize: ps } = data;
+      document.getElementById('totalText').textContent = `共 ${total} 条`;
+      const tbody = document.getElementById('userTableBody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-secondary py-12">暂无数据</td></tr>';
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+      tbody.innerHTML = list.map(u => `
+        <tr>
+          <td class="text-xs text-secondary">${u.id}</td>
+          <td><a href="./user-detail.html?id=${u.id}" class="font-medium">${u.username}</a></td>
+          <td>${u.nickname || '-'}</td>
+          <td>${u.created_at ? u.created_at.slice(0, 16).replace('T', ' ') : '-'}</td>
+          <td>${u.last_login_at ? u.last_login_at.slice(0, 16).replace('T', ' ') : '从未登录'}</td>
+          <td><span class="badge ${u.is_active ? 'badge-success' : 'badge-danger'}">${u.is_active ? '正常' : '已禁用'}</span></td>
+          <td>
+            <a href="./user-detail.html?id=${u.id}" class="text-primary text-sm mr-3">详情</a>
+            ${u.is_active ? `<button onclick="openDisableModal('${u.id}')" class="text-alert-red text-sm">禁用</button>` : ''}
+          </td>
+        </tr>
+      `).join('');
+      renderPagination(total, ps);
+    }
+
+    function renderPagination(total, ps) {
+      const totalPages = Math.ceil(total / ps);
+      const container = document.getElementById('pagination');
+      if (totalPages <= 1) { container.innerHTML = ''; return; }
+      let html = `<button ${currentPage === 1 ? 'disabled' : ''} onclick="goPage(${currentPage-1})">上一页</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+          html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+        } else if (Math.abs(i - currentPage) === 3) {
+          html += `<span class="px-1">...</span>`;
+        }
+      }
+      html += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="goPage(${currentPage+1})">下一页</button>`;
+      container.innerHTML = html;
+    }
+
+    function goPage(p) { currentPage = p; loadUsers(); }
+
+    function openDisableModal(id) { pendingDisableId = id; document.getElementById('disableModal').style.display = 'flex'; }
+    function closeDisableModal() { pendingDisableId = null; document.getElementById('disableModal').style.display = 'none'; }
+    async function confirmDisable() {
+      if (!pendingDisableId) return;
+      const result = await SSJ.apiRequest(`/users/${pendingDisableId}/disable`, 'PUT');
+      if (result.success && result.data.success) {
+        SSJAdmin.showToast('禁用成功');
+        closeDisableModal();
+        loadUsers();
+      } else {
+        SSJAdmin.showToast(result.data?.message || '禁用失败', true);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>仪表盘 - 随手记账后台管理系统</title>
+  <script src="../assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+</head>
+<body class="bg-surface">
+
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-50 bg-white border-b border-border-light">
+    <div class="flex items-center justify-between px-6 h-16">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
+          <span class="material-symbols-outlined text-white text-lg">admin_panel_settings</span>
+        </div>
+        <div>
+          <h1 class="font-headline-md font-bold text-primary">随手记账</h1>
+          <p class="text-label-sm text-secondary">后台管理系统</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-secondary" id="adminName"></span>
+        <button onclick="SSJ.logout()" class="flex items-center gap-1 text-sm text-secondary hover:text-primary transition">
+          <span class="material-symbols-outlined text-lg">logout</span>
+          <span class="hidden sm:inline">退出</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- 侧边栏 -->
+    <aside class="hidden md:flex flex-col w-60 fixed left-0 top-16 bottom-0 bg-white border-r border-border-light p-4 gap-1">
+      <nav class="flex flex-col gap-1">
+        <a href="./dashboard.html" class="sidebar-nav-item active">
+          <span class="material-symbols-outlined text-xl">dashboard</span> 仪表盘
+        </a>
+        <a href="./users.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">group</span> 用户管理
+        </a>
+        <a href="./transactions.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">receipt_long</span> 账单管理
+        </a>
+        <a href="./statistics/overview.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">bar_chart</span> 收入支出分析
+        </a>
+        <a href="./accounts.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">account_balance_wallet</span> 账户管理
+        </a>
+        <a href="./budgets.html" class="sidebar-nav-item">
+          <span class="material-symbols-outlined text-xl">savings</span> 预算管理
+        </a>
+      </nav>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="flex-1 md:ml-60 p-6">
+      <!-- 页面标题 -->
+      <div class="mb-6">
+        <h2 class="font-headline-lg text-headline-lg font-bold text-on-surface">仪表盘</h2>
+        <p class="text-sm text-secondary mt-1">系统核心数据总览</p>
+      </div>
+
+      <!-- 加载状态 -->
+      <div id="loadingState" class="text-center py-20 text-secondary">
+        <span class="material-symbols-outlined animate-spin text-4xl">progress_activity</span>
+        <p class="mt-3">加载中...</p>
+      </div>
+
+      <!-- 内容区 -->
+      <div id="contentArea" class="hidden space-y-6">
+
+        <!-- 核心指标卡片 -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="stat-card">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="material-symbols-outlined text-primary text-xl">group</span>
+              <span class="stat-card-label">总注册用户</span>
+            </div>
+            <div class="stat-card-value" id="statTotalUsers">-</div>
+            <p class="text-xs text-secondary mt-1">截至今日</p>
+          </div>
+          <div class="stat-card">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="material-symbols-outlined text-success text-xl">person_add</span>
+              <span class="stat-card-label">今日新增</span>
+            </div>
+            <div class="stat-card-value text-success" id="statTodayUsers">-</div>
+            <p class="text-xs text-secondary mt-1">今日</p>
+          </div>
+          <div class="stat-card">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="material-symbols-outlined text-alert-red text-xl">trending_down</span>
+              <span class="stat-card-label">本月支出</span>
+            </div>
+            <div class="stat-card-value text-alert-red" id="statMonthExpense">-</div>
+            <p class="text-xs text-secondary mt-1" id="statMonthLabel">-</p>
+          </div>
+          <div class="stat-card">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="material-symbols-outlined text-blue-500 text-xl">trending_up</span>
+              <span class="stat-card-label">本月收入</span>
+            </div>
+            <div class="stat-card-value text-blue-500" id="statMonthIncome">-</div>
+            <p class="text-xs text-secondary mt-1" id="statMonthLabel2">-</p>
+          </div>
+        </div>
+
+        <!-- 图表区 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- 用户增长趋势 -->
+          <div class="bg-white rounded-xl border border-border-light p-5 shadow-card">
+            <h3 class="font-semibold text-on-surface mb-4">近30天用户增长趋势</h3>
+            <div id="userTrendChart" style="height:240px;"></div>
+          </div>
+          <!-- 收支趋势 -->
+          <div class="bg-white rounded-xl border border-border-light p-5 shadow-card">
+            <h3 class="font-semibold text-on-surface mb-4">近30天收支趋势</h3>
+            <div id="transactionTrendChart" style="height:240px;"></div>
+          </div>
+        </div>
+
+        <!-- 最近注册用户 -->
+        <div class="bg-white rounded-xl border border-border-light p-5 shadow-card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-on-surface">最近注册用户</h3>
+            <a href="./users.html" class="text-sm text-primary hover:underline">查看全部 →</a>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>用户名</th>
+                <th>昵称</th>
+                <th>注册时间</th>
+              </tr>
+            </thead>
+            <tbody id="recentUsersTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../assets/js/shared.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!SSJ.isLoggedIn()) { window.location.href = '../login.html'; return; }
+
+      const session = SSJ.getAdminSession();
+      document.getElementById('adminName').textContent = session.nickname || session.username;
+
+      loadDashboard();
+    });
+
+    async function loadDashboard() {
+      try {
+        // 并行加载所有数据
+        const [summaryRes, userTrendRes, txnTrendRes, recentUsersRes] = await Promise.all([
+          SSJ.apiRequest('/dashboard/summary'),
+          SSJ.apiRequest('/dashboard/user-trend'),
+          SSJ.apiRequest('/dashboard/transaction-trend'),
+          SSJ.apiRequest('/dashboard/recent-users')
+        ]);
+
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('contentArea').classList.remove('hidden');
+
+        if (summaryRes.success && summaryRes.data.success) {
+          const d = summaryRes.data.data;
+          document.getElementById('statTotalUsers').textContent = d.total_users.toLocaleString();
+          document.getElementById('statTodayUsers').textContent = d.today_new_users;
+          document.getElementById('statMonthExpense').textContent = '¥' + Number(d.month_expense).toLocaleString();
+          document.getElementById('statMonthIncome').textContent = '¥' + Number(d.month_income).toLocaleString();
+          document.getElementById('statMonthLabel').textContent = d.year_month;
+          document.getElementById('statMonthLabel2').textContent = d.year_month;
+        }
+
+        // 用户趋势图
+        if (userTrendRes.success && userTrendRes.data.success) {
+          renderUserTrendChart(userTrendRes.data.data);
+        }
+
+        // 收支趋势图
+        if (txnTrendRes.success && txnTrendRes.data.success) {
+          renderTransactionTrendChart(txnTrendRes.data.data);
+        }
+
+        // 最近用户
+        if (recentUsersRes.success && recentUsersRes.data.success) {
+          renderRecentUsers(recentUsersRes.data.data);
+        }
+      } catch (err) {
+        document.getElementById('loadingState').innerHTML =
+          '<span class="material-symbols-outlined text-alert-red text-4xl">error</span><p class="mt-3 text-alert-red">加载失败，请检查服务器</p>';
+      }
+    }
+
+    function renderUserTrendChart(data) {
+      const chart = echarts.init(document.getElementById('userTrendChart'));
+      const dates = data.map(d => d.date.slice(5)); // MM-DD
+      const counts = data.map(d => d.count);
+
+      chart.setOption({
+        tooltip: { trigger: 'axis' },
+        grid: { left: '3%', right: '4%', bottom: '3%', top: '10%', containLabel: true },
+        xAxis: { type: 'category', data: dates, axisLabel: { fontSize: 11 } },
+        yAxis: { type: 'value', minInterval: 1, axisLabel: { fontSize: 11 } },
+        series: [{
+          type: 'bar',
+          data: counts,
+          itemStyle: { color: '#10B981', borderRadius: [4, 4, 0, 0] },
+          barWidth: '60%'
+        }]
+      });
+      window.addEventListener('resize', () => chart.resize());
+    }
+
+    function renderTransactionTrendChart(data) {
+      const chart = echarts.init(document.getElementById('transactionTrendChart'));
+      const dates = data.map(d => d.date.slice(5));
+      const expense = data.map(d => Number(d.expense));
+      const income = data.map(d => Number(d.income));
+
+      chart.setOption({
+        tooltip: { trigger: 'axis', formatter: p => p.map(s => `${s.marker} ${s.seriesName}: ¥${Number(s.value).toLocaleString()}`).join('<br/>') },
+        legend: { data: ['支出', '收入'], top: 0, right: 0, textStyle: { fontSize: 11 } },
+        grid: { left: '3%', right: '4%', bottom: '3%', top: '20%', containLabel: true },
+        xAxis: { type: 'category', data: dates, axisLabel: { fontSize: 11 } },
+        yAxis: { type: 'value', axisLabel: { fontSize: 11, formatter: v => '¥' + v.toLocaleString() } },
+        series: [
+          { name: '支出', type: 'line', data: expense, smooth: true, itemStyle: { color: '#EF4444' }, lineStyle: { width: 2 } },
+          { name: '收入', type: 'line', data: income, smooth: true, itemStyle: { color: '#3B82F6' }, lineStyle: { width: 2 } }
+        ]
+      });
+      window.addEventListener('resize', () => chart.resize());
+    }
+
+    function renderRecentUsers(users) {
+      const tbody = document.getElementById('recentUsersTable');
+      if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-secondary py-8">暂无数据</td></tr>';
+        return;
+      }
+      tbody.innerHTML = users.map(u => `
+        <tr>
+          <td><a href="./user-detail.html?id=${u.id}">${u.username}</a></td>
+          <td>${u.nickname || '-'}</td>
+          <td>${u.created_at ? u.created_at.slice(0, 16).replace('T', ' ') : '-'}</td>
+        </tr>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

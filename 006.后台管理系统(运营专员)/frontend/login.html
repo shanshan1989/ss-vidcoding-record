@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理员登录 - 随手记账后台管理系统</title>
+  <script src="./assets/js/tailwind-config.js"></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>tailwind.config = window.tailwindConfig;</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/components.css">
+  <style>
+    body { background: linear-gradient(135deg, #e8f5f0 0%, #d0f5e8 50%, #b8e8d8 100%); min-height: 100vh; }
+    .login-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
+  </style>
+</head>
+<body>
+  <!-- 背景装饰 -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-primary opacity-10 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-400 opacity-10 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- 登录卡片 -->
+  <div class="relative min-h-screen flex items-center justify-center px-4">
+    <div class="login-card w-full max-w-md rounded-2xl shadow-dropdown p-8 animate-fade-in">
+      <!-- Logo -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4 shadow-card">
+          <span class="material-symbols-outlined text-white text-3xl">admin_panel_settings</span>
+        </div>
+        <h1 class="font-display-lg text-headline-lg font-black text-primary">随手记账</h1>
+        <p class="text-secondary text-sm mt-1">后台管理系统</p>
+      </div>
+
+      <!-- 表单 -->
+      <form id="loginForm">
+        <div class="space-y-5">
+          <!-- 用户名 -->
+          <div>
+            <label class="block text-sm font-semibold text-on-surface mb-1.5">管理员账号</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-secondary text-xl">person</span>
+              <input type="text" id="username" name="username" placeholder="请输入管理员账号"
+                class="w-full pl-10 pr-4 py-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                required autocomplete="username">
+            </div>
+          </div>
+
+          <!-- 密码 -->
+          <div>
+            <label class="block text-sm font-semibold text-on-surface mb-1.5">密码</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-secondary text-xl">lock</span>
+              <input type="password" id="password" name="password" placeholder="请输入密码"
+                class="w-full pl-10 pr-12 py-3 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition"
+                required autocomplete="current-password">
+              <button type="button" onclick="SSJAdmin.togglePassword('password')"
+                class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-secondary text-xl cursor-pointer"
+                style="font-size:20px">visibility</button>
+            </div>
+          </div>
+
+          <!-- 登录按钮 -->
+          <button type="submit" id="loginBtn"
+            class="w-full py-3 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg transition shadow-card">
+            登录
+          </button>
+        </div>
+      </form>
+
+      <!-- 底部 -->
+      <div class="text-center mt-6">
+        <a href="./index.html" class="text-sm text-secondary hover:text-primary transition">返回随手记账</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 成功提示遮罩 -->
+  <div id="successOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9999; align-items:center; justify-content:center;">
+    <div class="bg-white rounded-2xl p-8 text-center shadow-dropdown" style="min-width:280px;">
+      <div class="w-16 h-16 bg-success-bg rounded-full flex items-center justify-center mx-auto mb-4">
+        <span class="material-symbols-outlined text-success" style="font-size:32px">check_circle</span>
+      </div>
+      <p class="success-message text-headline-md font-bold text-on-surface">登录成功</p>
+      <p class="text-sm text-secondary mt-1">正在跳转...</p>
+    </div>
+  </div>
+
+  <script src="./assets/js/shared.js"></script>
+  <script src="./assets/js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 已登录则跳转
+      if (SSJ.isLoggedIn()) {
+        window.location.href = './pages/dashboard.html';
+        return;
+      }
+
+      const form = document.getElementById('loginForm');
+      const loginBtn = document.getElementById('loginBtn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        SSJAdmin.setButtonLoading(loginBtn, true);
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+
+        try {
+          const result = await SSJ.apiRequest('/auth/login', 'POST', { username, password });
+          console.log('Login result:', result);
+          if (result.status === 0) {
+            SSJAdmin.showToast('无法连接到服务器，请确认后端已启动（npm start）', true);
+            SSJAdmin.setButtonLoading(loginBtn, false);
+            return;
+          }
+          if (result.success && result.data && result.data.success) {
+            const admin = result.data.data;
+            SSJ.saveAdminSession(admin);
+            SSJAdmin.showSuccessOverlay('successOverlay', '登录成功');
+            setTimeout(() => { window.location.href = './pages/dashboard.html'; }, 1500);
+          } else {
+            const msg = (result.data && result.data.message) || '登录失败，请检查账号密码';
+            SSJAdmin.showToast(msg, true);
+            SSJAdmin.setButtonLoading(loginBtn, false);
+          }
+        } catch (err) {
+          console.error('Login exception:', err);
+          SSJAdmin.showToast('网络错误，请检查服务器是否运行', true);
+          SSJAdmin.setButtonLoading(loginBtn, false);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
