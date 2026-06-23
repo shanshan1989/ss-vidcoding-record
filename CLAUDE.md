@@ -177,6 +177,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 ```
 
+### 退出登录路径（后台管理）
+```javascript
+// shared.js 中 logout() 使用 '../login.html'，从 pages/ 目录跳回根目录登录页
+window.location.href = '../login.html';
+```
+
 ### localStorage / sessionStorage 键名
 | 键名 | 存储位置 | 用途 |
 |------|---------|------|
@@ -225,7 +231,7 @@ const result = await SSJ.apiRequest('/users', 'GET');
 | 接口 | 方法 | 鉴权 | 说明 |
 |------|------|------|------|
 | `/api/admin/auth/login` | POST | 否 | 管理员登录 |
-| `/api/admin/auth/logout` | POST | 是 | 登出 |
+| `/api/admin/auth/logout` | POST | 是 | 登出（清除 session） |
 | `/api/admin/auth/me` | GET | 是 | 当前管理员信息 |
 | `/api/admin/dashboard/summary` | GET | 是 | 核心指标 |
 | `/api/admin/dashboard/user-trend` | GET | 是 | 30天用户趋势 |
@@ -233,6 +239,7 @@ const result = await SSJ.apiRequest('/users', 'GET');
 | `/api/admin/dashboard/recent-users` | GET | 是 | 最近注册用户 |
 | `/api/admin/users` | GET | 是 | 用户列表（筛选/分页） |
 | `/api/admin/users/:id` | GET | 是 | 用户详情 |
+| `/api/admin/users/:id/disable` | PUT | 是 | 禁用用户（软删除） |
 | `/api/admin/transactions` | GET | 是 | 账单列表（多维筛选） |
 | `/api/admin/transactions/:id` | GET | 是 | 账单详情 |
 | `/api/admin/accounts` | GET | 是 | 账户列表 |
