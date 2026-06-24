@@ -1,7 +1,7 @@
 // 随手记账 - API 服务（UniApp 版本）
 // 统一封装所有后端接口调用
 
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = 'http://192.168.2.111:3000/api'
 
 function getHeaders() {
   const session = uni.getStorageSync('ssj_user_session')

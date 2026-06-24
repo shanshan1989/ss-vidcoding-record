@@ -340,7 +340,7 @@ export default {
           })
         }
 
-        ctx.draw()
+        ctx.draw(true)
       } catch (e) {
         console.error('Line draw error:', e)
       }

@@ -1,5 +1,5 @@
 <template>
-  <view class="home-page">
+  <view class="home-page" :style="{ paddingTop: statusBarHeight + 12 + 'px' }">
     <!-- 加载中 -->
     <view v-if="loading" class="loading-state">
       <text>加载中...</text>
@@ -138,7 +138,8 @@ export default {
       summary: { balance: '0', month_income: '0', month_expense: '0' },
       budget: null,
       showSuccess: false,
-      showGuide: false
+      showGuide: false,
+      statusBarHeight: 0
     }
   },
   computed: {
@@ -148,6 +149,8 @@ export default {
     }
   },
   onLoad() {
+    const sys = uni.getSystemInfoSync()
+    this.statusBarHeight = sys.statusBarHeight || 0
     this.loadData()
     this.checkNewUser()
   },
@@ -259,8 +262,6 @@ export default {
   min-height: 100vh;
   background: #f5fdf8;
   padding-bottom: 20px;
-  padding-top: constant(safe-area-inset-top);
-  padding-top: env(safe-area-inset-top);
 }
 
 .loading-state {
